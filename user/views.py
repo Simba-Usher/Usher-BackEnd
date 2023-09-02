@@ -12,7 +12,9 @@ class ConfirmEmailView(APIView):
 
         if confirmation:
             confirmation.confirm(self.request)
-            return Response({"status": "success", "message": "Email verification successful!"})
+            
+            # Email verification successful! Redirecting to the desired page.
+            return HttpResponseRedirect('http://localhost:5173/success')
         else:
             return Response({"status": "failure", "message": "Email verification failed!"})
 

@@ -60,6 +60,8 @@ INSTALLED_APPS = [
     #'django-allauth',
     'allauth',
     'allauth.account',
+
+    'corsheaders',
 ]
 
 SIMPLE_JWT = {
@@ -72,6 +74,11 @@ SIMPLE_JWT = {
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+
+    #corsheaders
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -199,3 +206,14 @@ REST_USE_JWT = True
 DJ_REST_AUTH_REGISTER_SERIALIZERS = {
     'REGISTER_SERIALIZER': 'user_path.serializers.CustomRegisterSerializer',
 }
+
+#CORS설정
+
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGIN = [
+    "http://127.0.0.1:8000/",
+    "http://localhost:5173",
+
+]
