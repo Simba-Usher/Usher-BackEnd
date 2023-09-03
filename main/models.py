@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from user.models import CustomUser
 from mypage.models import Ticket
+from datetime import date
 
 def image_upload_path(instance, filename):
     return f'{instance.pk}/{filename}'
@@ -11,6 +12,9 @@ class MainPost(models.Model):
     title = models.CharField(max_length=50)
     content = models.TextField()
     image = models.ImageField(upload_to=image_upload_path, blank=True, null=True)
+    price = models.PositiveIntegerField(default=0)
+    start_date = models.DateField(verbose_name='시작날짜', null=True)
+    end_date = models.DateField(verbose_name='종료날짜', null=True)
     mainreviews_cnt = models.PositiveIntegerField(default=0)
     GENRE_CHOICES = [
         ('뮤지컬', '뮤지컬'),

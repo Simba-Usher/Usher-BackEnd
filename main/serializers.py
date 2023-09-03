@@ -3,6 +3,8 @@ from .models import *
 from rest_framework.serializers import ListField
 from django.db.models import Avg
 
+from mypage.models import Ticket
+
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
@@ -47,6 +49,9 @@ class MainPostSerializer(serializers.ModelSerializer):
             'location',
             'average_rating',
             'reactions',
+            'price',
+            'start_date',
+            'end_date',
         ]
         read_only_fields = ['id', 'writer', 'mainreviews', 'mainreviews_cnt', 'like_cnt', 'average_rating',]
 
@@ -74,9 +79,11 @@ class MainPostListSerializer(serializers.ModelSerializer):
             'image',
             'like_cnt',
             'genre',
-            'location'
+            'location',
+            'start_date',
+            'end_date',
         ]
-        read_only_fields = ['id', 'writer', 'mainreviews', 'mainreviews_cnt', 'like_cnt']
+        read_only_fields = ['id', 'writer', 'mainreviews', 'mainreviews_cnt', 'like_cnt', 'start_date', 'end_date',]
 
 class MainReviewSerializer(serializers.ModelSerializer):
     writer = CustomUserSerializer(read_only=True)
@@ -84,6 +91,10 @@ class MainReviewSerializer(serializers.ModelSerializer):
     mainpost = serializers.SerializerMethodField()
     mainrecoms = serializers.SerializerMethodField()
     mainrecoms_cnt = serializers.SerializerMethodField()
+    ticket = serializers.SerializerMethodField()
+    
+    def get_ticket(self, obj):
+        return serializers.PrimaryKeyRelatedField(queryset=Ticket.objects.filter(writer=self.context['request'].user))
 
     def get_mainpost(self, instance):
         return instance.mainpost.title

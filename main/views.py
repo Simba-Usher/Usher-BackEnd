@@ -13,18 +13,48 @@ from rest_framework import status
 from django_filters import rest_framework as filters
 from rest_framework.filters import SearchFilter
 
+from django_filters import DateFromToRangeFilter, Filter
 
 from .models import *
 from .serializers import *
 from .permissions import IsOwnerOrReadOnly
 
+def validate_thousand(value):
+    if value % 1000 != 0:
+        raise serializers.ValidationError("가격은 1000원 단위로 설정해야 합니다.")
+
+class ThousandFilter(filters.NumberFilter):
+    def filter(self, qs, value):
+        validate_thousand(value)
+        return super().filter(qs, value)
+
+class OverlappingPriceRangeFilter(Filter):
+    def filter(self, qs, value):
+        if value:
+            min_price, max_price = value
+            # Check for overlapping ranges using Q objects
+            overlapping = Q(price__lte=max_price, price__gte=min_price)
+            return qs.filter(overlapping)
+        return qs
+
+class OverlappingDateRangeFilter(Filter):
+    def filter(self, qs, value):
+        if value:
+            start_date, end_date = value
+            # Check for overlapping ranges using Q objects
+            overlapping = Q(start_date__lte=end_date, end_date__gte=start_date)
+            return qs.filter(overlapping)
+        return qs
+
 class MainPostFilter(filters.FilterSet):
-    genre = filters.ChoiceFilter(choices=MainPost.genre)
-    location = filters.ChoiceFilter(choices=MainPost.location)
+    genre = filters.ChoiceFilter(choices=MainPost.GENRE_CHOICES)
+    location = filters.ChoiceFilter(choices=MainPost.LOCATION_CHOICES)
+    price_range = OverlappingPriceRangeFilter()
+    date_range = OverlappingDateRangeFilter()
 
     class Meta:
         model = MainPost
-        fields = ['genre', 'location']
+        fields = ['genre', 'location', 'price_range', 'date_range']
 
 class MainPostViewSet(viewsets.ModelViewSet):
     queryset = MainPost.objects.annotate(
@@ -122,9 +152,14 @@ class MainReviewWriteViewSet(
 
     def create(self, request, mainpost_id=None):
         mainpost = get_object_or_404(MainPost, id=mainpost_id)
+        ticket_id = request.data.get('ticket')
+        if not ticket_id:
+            return Response({"error": "티켓을 선택해주세요."}, status=400)
+        ticket = get_object_or_404(Ticket, id=ticket_id)
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(mainpost=mainpost)
+        serializer.save(mainpost=mainpost, ticket=ticket)
         return Response(serializer.data)
 
 # 리뷰 댓글 detail 관련 뷰셋
