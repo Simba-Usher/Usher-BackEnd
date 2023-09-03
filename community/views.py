@@ -38,7 +38,7 @@ class ComPostViewSet(viewsets.ModelViewSet):
     search_fields = ["title"]
     #ordering_fields = ["-created_at"]
     pagination_class = ComPostPagination
-    
+    serializer_class = ComPostSerializer
 
     def get_permissions(self):
         if self.action in ["destroy"]:
@@ -115,6 +115,7 @@ class ComPostViewSet(viewsets.ModelViewSet):
 #댓글 detail 뷰셋
 class ComCommentViewSet(
     viewsets.GenericViewSet, 
+    mixins.ListModelMixin,
     mixins.RetrieveModelMixin, 
     mixins.DestroyModelMixin,
     ):
@@ -199,5 +200,5 @@ class ComReplyViewSet(
     # 읽기만 가능
     def get_permissions(self):
         if self.action in ['create', 'destroy']:
-            return [IsAuthenticated()]
+            return [IsOwnerOrReadOnly()]
         return []

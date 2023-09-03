@@ -11,7 +11,7 @@ class MainPost(models.Model):
     title = models.CharField(max_length=50)
     content = models.TextField()
     image = models.ImageField(upload_to=image_upload_path, blank=True, null=True)
-    reviews_cnt = models.PositiveIntegerField(default=0)
+    mainreviews_cnt = models.PositiveIntegerField(default=0)
     GENRE_CHOICES = [
         ('뮤지컬', '뮤지컬'),
         ('연극', '연극'),
@@ -32,7 +32,7 @@ class MainPost(models.Model):
         ('제주', '제주')
     ]
 
-    genre_type = models.CharField(
+    genre = models.CharField(
         max_length=10,
         choices=GENRE_CHOICES,
         default='뮤지컬',
@@ -46,6 +46,7 @@ class MainPost(models.Model):
 
     def __str__(self):
         return self.title
+    
 
 class MainReview(models.Model):
     id = models.AutoField(primary_key=True)
@@ -54,7 +55,6 @@ class MainReview(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     ticket  = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name='mainreviews')
-    #like = models.PositiveIntegerField(default=0)
     writer = models.ForeignKey(CustomUser, on_delete=models.CASCADE, blank=False, null=True)
     RATING_CHOICES = [
         (1, '1점'),
@@ -65,6 +65,7 @@ class MainReview(models.Model):
     ]
 
     rating = models.IntegerField(choices=RATING_CHOICES, default=5)
+    mainrecoms_cnt = models.PositiveIntegerField(default=0)
 
     def save(self, *args, **kwargs):
         # 댓글이 생성될 때 'comcomments_cnt' 필드 갱신
@@ -84,6 +85,12 @@ class MainReview(models.Model):
     class Meta:
         verbose_name = "MainReview"
         verbose_name_plural = "MainReviews"
+
+class MainPostReaction(models.Model):
+    REACTION_CHOICES = (("like", "like"), ("heart", "Heart"))
+    reaction = models.CharField(choices=REACTION_CHOICES, max_length=10)
+    mainpost = models.ForeignKey(MainPost, on_delete=models.CASCADE, related_name="reactions")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
 class MainReviewReaction(models.Model):
     REACTION_CHOICES = (("공감", "공감"), ("heart", "Heart"))
