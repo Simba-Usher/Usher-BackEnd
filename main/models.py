@@ -1,11 +1,16 @@
 from django.db import models
+from django.conf import settings
 from user.models import CustomUser
+from mypage.models import Ticket
+
+def image_upload_path(instance, filename):
+    return f'{instance.pk}/{filename}'
 
 class MainPost(models.Model):
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=50)
     content = models.TextField()
-    #image = models.ImageField(upload_to=image_upload_path, blank=True, null=True)
+    image = models.ImageField(upload_to=image_upload_path, blank=True, null=True)
     reviews_cnt = models.PositiveIntegerField(default=0)
     GENRE_CHOICES = [
         ('뮤지컬', '뮤지컬'),
@@ -44,10 +49,11 @@ class MainPost(models.Model):
 
 class MainReview(models.Model):
     id = models.AutoField(primary_key=True)
-    mainpost= models.ForeignKey(MainPost, blank=True, null=True, on_delete=models.CASCADE, related_name='comcomments')
+    mainpost= models.ForeignKey(MainPost, blank=True, null=True, on_delete=models.CASCADE, related_name='mainreviews')
     content = models.TextField(max_length=500, blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    ticket  = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name='mainreviews')
     #like = models.PositiveIntegerField(default=0)
     writer = models.ForeignKey(CustomUser, on_delete=models.CASCADE, blank=False, null=True)
     RATING_CHOICES = [
@@ -68,13 +74,27 @@ class MainReview(models.Model):
 
     def delete(self, *args, **kwargs):
         # 댓글이 삭제될 때 'comcomments_cnt' 필드 갱신
-        self.mainpost.mainreviews = self.mainpost.mainreviews.count()
+        self.mainpost.mainreviews_cnt = self.mainpost.mainreviews.count()
         self.mainpost.save()
         super(MainReview, self).delete(*args, **kwargs)
 
     def __str__(self):
         return f"{self.rating}점 - {self.comment[:10]}"  
-        
+
     class Meta:
         verbose_name = "MainReview"
         verbose_name_plural = "MainReviews"
+
+class MainReviewReaction(models.Model):
+    REACTION_CHOICES = (("공감", "공감"), ("heart", "Heart"))
+    reaction = models.CharField(choices=REACTION_CHOICES, max_length=10)
+    mainreview = models.ForeignKey(MainReview, on_delete=models.CASCADE, related_name="reactions")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+class MainReviewComment(models.Model):
+    id = models.AutoField(primary_key=True)
+    writer = models.ForeignKey(CustomUser, on_delete=models.CASCADE, blank=False, null=True)
+    content = models.TextField(max_length=200)
+    created_at = models.DateTimeField(auto_now_add=True)
+    mainreview = models.ForeignKey(MainReview, blank=False, null=False, on_delete=models.CASCADE, related_name='mainrecoms')
+

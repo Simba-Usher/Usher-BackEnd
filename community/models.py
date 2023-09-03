@@ -1,7 +1,6 @@
 from django.db import models
 from user.models import *
 from django.conf import settings
-#from user.models import User
 
 def image_upload_path(instance, filename):
     return f'{instance.pk}/{filename}'
