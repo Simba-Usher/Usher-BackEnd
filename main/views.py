@@ -1,5 +1,3 @@
-from django.shortcuts import render
-
 from django.shortcuts import render, get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Count, Q, Avg
@@ -8,7 +6,6 @@ from rest_framework import viewsets, mixins
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, action
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
-from rest_framework.pagination import PageNumberPagination
 from rest_framework import status
 from django_filters import rest_framework as filters
 from rest_framework.filters import SearchFilter
@@ -55,6 +52,14 @@ class MainPostFilter(filters.FilterSet):
     class Meta:
         model = MainPost
         fields = ['genre', 'location', 'price_range', 'date_range']
+
+class MainReviewFilter(filters.FilterSet):
+    genre = filters.ChoiceFilter(choices=MainPost.RATING_CHOICES)
+    price_range = OverlappingPriceRangeFilter()
+
+    class Meta:
+        model = MainPost
+        fields = ['genre', 'price_range']
 
 class MainPostViewSet(viewsets.ModelViewSet):
     queryset = MainPost.objects.annotate(
@@ -120,6 +125,12 @@ class MainReviewViewSet(
     ):
     queryset = MainReview.objects.all()
     serializer_class = MainReviewSerializer
+
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_class = MainReviewFilter
+
+    filterset_fields = ["title"]
+    search_fields = ["title"]
 
     def get_permissions(self):
         if self.action in ["create", "destroy"]:
@@ -190,7 +201,7 @@ class MainReviewCommentWriteViewSet(
 
     def get_queryset(self):
         mainreview = self.kwargs.get("mainreview_id")
-        queryset = ComReply.objects.filter(mainreview_id=mainreview)
+        queryset = MainReviewComment.objects.filter(mainreview_id=mainreview)
         return queryset
     
     def get_permissions(self):
