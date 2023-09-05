@@ -8,6 +8,8 @@ from rest_framework import viewsets, permissions
 from .models import CustomUser
 from .serializers import *
 from rest_framework_simplejwt.views import TokenObtainPairView
+from dj_rest_auth.views import LogoutView
+
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
