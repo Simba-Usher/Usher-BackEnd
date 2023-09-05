@@ -96,7 +96,7 @@ SITE_ID = 1
 REST_USE_JWT = True
 
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USER_MODEL_USERNAME_FIELD = 'email'
@@ -117,6 +117,15 @@ ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1
 
 # 이메일에 자동으로 표시되는 사이트 정보
 ACCOUNT_EMAIL_SUBJECT_PREFIX = "[Usher] "
+
+DJ_REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'user.serializers.CustomRegisterSerializer',
+}
+
+#REST_AUTH_REGISTER_SERIALIZERS = {
+#    'REGISTER_SERIALIZER': 'user.serializers.CustomRegisterSerializer',
+#}
+
 
 
 ROOT_URLCONF = 'usher.urls'
@@ -201,10 +210,6 @@ REST_FRAMEWORK = {
     ),
 }
 REST_USE_JWT = True
-
-DJ_REST_AUTH_REGISTER_SERIALIZERS = {
-    'REGISTER_SERIALIZER': 'user_path.serializers.CustomRegisterSerializer',
-}
 
 #CORS설정
 
