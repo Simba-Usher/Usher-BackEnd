@@ -4,17 +4,14 @@ from rest_framework import serializers
 from .models import CustomUser
 
 class CustomRegisterSerializer(RegisterSerializer):
-    name = serializers.CharField(max_length=255, required=True)
     nickname = serializers.CharField(max_length=6, required=True) 
 
     def get_cleaned_data(self):
-        super().get_cleaned_data()
-        return {
-            'password1': self.validated_data.get('password1', ''),
-            'password2': self.validated_data.get('password2', ''),  # password2를 다시 포함시킵니다.
-            'email': self.validated_data.get('email', ''),
+        cleaned_data = super().get_cleaned_data()
+        cleaned_data.update({
             'nickname': self.validated_data.get('nickname', ''),
-        }
+        })
+        return cleaned_data
 
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:

@@ -30,8 +30,8 @@ class CustomUserManager(BaseUserManager):
 
 class CustomUser(AbstractUser):
     objects = CustomUserManager()
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['nickname'] 
+    USERNAME_FIELD = 'nickname'
+    REQUIRED_FIELDS = ['email'] 
 
     email = models.EmailField(unique=True) 
     nickname = models.CharField(max_length=6, unique=True)
