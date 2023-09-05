@@ -18,6 +18,7 @@ class Ticket(models.Model):
 
 class Memo(models.Model):
     id = models.AutoField(primary_key=True)
+    title = models.CharField(max_length=20, default=0)
     location = models.CharField(max_length=20)
     date = models.DateField()
     content = models.TextField(max_length=200)

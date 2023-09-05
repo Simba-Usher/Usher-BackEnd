@@ -2,6 +2,10 @@ from dj_rest_auth.registration.serializers import RegisterSerializer
 from dj_rest_auth.serializers import LoginSerializer as DefaultLoginSerializer
 from rest_framework import serializers
 from .models import CustomUser
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    username_field = 'email'
 
 class CustomRegisterSerializer(RegisterSerializer):
     nickname = serializers.CharField(max_length=6, required=True) 

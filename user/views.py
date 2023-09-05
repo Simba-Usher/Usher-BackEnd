@@ -7,6 +7,20 @@ from rest_framework.response import Response
 from rest_framework import viewsets, permissions
 from .models import CustomUser
 from .serializers import *
+from rest_framework_simplejwt.views import TokenObtainPairView
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        if response.status_code == 200:
+            user = self.user
+            if user:
+                response.data.update({"nickname": user.nickname})
+        return response
+
 
 class ConfirmEmailView(APIView):
     permission_classes = [AllowAny]

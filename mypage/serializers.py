@@ -63,7 +63,7 @@ class TicketSerializer(serializers.ModelSerializer):
 class MemoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Memo
-        fields = ('id', 'location', 'date', 'content')
+        fields = ('id', 'title', 'date', 'location', 'content')
         read_only_fields = ['id']
 
     def create(self, validated_data):
