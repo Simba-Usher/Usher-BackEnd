@@ -19,7 +19,7 @@ class ConfirmEmailView(APIView):
             
             return HttpResponseRedirect('http://localhost:5173/success')
         else:
-            return Response({"status": "failure", "message": "Email verification failed!"})
+            return Response({"status": "failure", "message": "이메일 인증이 완료되었습니다."})
 
     def get_object(self, queryset=None):
         key = self.kwargs['key']
