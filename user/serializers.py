@@ -6,6 +6,12 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     username_field = 'email'
+    
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        data['user'] = self.user
+        return data
+
 
 class CustomRegisterSerializer(RegisterSerializer):
     nickname = serializers.CharField(max_length=6, required=True) 

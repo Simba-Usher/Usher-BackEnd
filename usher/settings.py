@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     # dj-rest-auth
     'dj_rest_auth',
     'dj_rest_auth.registration',
+    
 
     #'django-allauth',
     'allauth',
@@ -69,7 +70,10 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME' : timedelta(days=14),
     'ROTATE_REFRESH_TOKENS' : False,
     'TOKEN_USER_CLASS' : 'django.contrib.auth.models.User',
+    'ALGORITHM': 'HS256',
+    'AUTH_HEADER_TYPES': ('Bearer',),
 }
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

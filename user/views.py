@@ -9,16 +9,17 @@ from .models import CustomUser
 from .serializers import *
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-
 class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
         if response.status_code == 200:
-            user = self.user
+            user = response.data['user']
             if user:
                 response.data.update({"nickname": user.nickname})
+            del response.data['user']  # user 객체는 응답에서 제거
         return response
 
 
