@@ -91,7 +91,7 @@ MIDDLEWARE = [
 #]
 
 AUTHENTICATION_BACKENDS = [
-    'user.CustomAuthenticationBackend',  # 이 경로는 실제 커스텀 백엔드의 위치로 바꿔야 합니다.
+    'user.backends.CustomAuthenticationBackend',  # 이 경로는 실제 커스텀 백엔드의 위치로 바꿔야 합니다.
     'allauth.account.auth_backends.AuthenticationBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
