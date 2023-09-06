@@ -11,4 +11,5 @@ urlpatterns = [
     path('mypage/', include(router.urls)),
     path('mypage/ticket', TicketView.as_view(), name='ticket'),
     path('mypage/profile', ProfileUpdateView.as_view(), name='profile_update'),
+    path('mypage/liked-shows', ShowLikeListView.as_view(), name='liked-mainposts'),
 ]

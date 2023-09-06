@@ -71,12 +71,12 @@ class MemoSerializer(serializers.ModelSerializer):
         return Memo.objects.create(**validated_data)
 
 #내가 좋아요 한 공연 글 모음
-class PerformanceLike(serializers.Serializer):
-    class Meta:
-        model = MainPost
-        fields = '__all__'
+#class ShowLike(serializers.Serializer):
+#    class Meta:
+#        model = MainPost
+#        fields = '__all__'
 
-class ArticleLike(serializers.Serializer):
-    class Meta:
-        model = ComPost
-        fields = '__all__'
+#class ArticleLike(serializers.Serializer):
+#    class Meta:
+#        model = ComPost
+#        fields = '__all__'
