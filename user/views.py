@@ -69,3 +69,5 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         if 'grade' in serializer.validated_data and not self.request.user.is_staff:
             raise serializers.ValidationError({"grade": "Only admin can change the grade."})
         serializer.save()
+    #validate data를 return 해가야 함
+#        return Response(validate.)

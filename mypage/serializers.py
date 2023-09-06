@@ -6,7 +6,8 @@ from main.models import *
 from community.models import *
 from main.serializers import *
 from community.serializers import *
-from user.models import CustomUser
+from user.models import *
+from user.backends import *
 
 from dj_rest_auth.serializers import UserDetailsSerializer
 
@@ -25,6 +26,7 @@ class ProfileUpdateSerializer(UserDetailsSerializer):
         new_password_confirm = data.get('new_password_confirm')
         old_password = data.get('old_password') 
 
+    #닉네임 변경 시 유효성 검사 로직
     def validate_nickname(self, value):
         """ Check that nickname is unique. """
         if get_user_model().objects.exclude(pk=self.instance.pk).filter(nickname=value).exists():
@@ -70,7 +72,7 @@ class MemoSerializer(serializers.ModelSerializer):
         return Memo.objects.create(**validated_data)
 
 #내가 좋아요 한 공연 글 모음
-#class PerformanceLike(serializers.Serializer):
-#    class Meta:
-#        model = MainPost
-#        fields = ['']
+class PerformanceLike(serializers.Serializer):
+    class Meta:
+        model = MainPost
+        fields = '__all__'

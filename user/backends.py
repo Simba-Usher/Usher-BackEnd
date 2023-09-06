@@ -5,7 +5,7 @@ class CustomAuthenticationBackend(ModelBackend):
     def authenticate(self, request, email=None, password=None, **kwargs):
         UserModel = get_user_model()
         try:
-            user = UserModel.objects.get(email=email)  # 여기를 수정하였습니다.
+            user = UserModel.objects.get(email=email) 
         except UserModel.DoesNotExist:
             return None
 

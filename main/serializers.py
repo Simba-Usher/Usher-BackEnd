@@ -8,10 +8,11 @@ from mypage.models import Ticket
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['email', 'nickname']  
+        fields = ['nickname']  
 
 class MainPostSerializer(serializers.ModelSerializer):
     #writer = CustomUserSerializer(read_only=True)
+    #writer = serializers.CharField(source='writer.nickname', read_only=True)
     mainreviews = serializers.SerializerMethodField()
     image = serializers.ImageField(use_url=True, required=False)
     like_cnt = serializers.SerializerMethodField()
@@ -32,6 +33,7 @@ class MainPostSerializer(serializers.ModelSerializer):
             MainPostMedia.objects.create(mainpost=mainpost, media=media_data)
         return mainpost
 
+    #전체 별점 평균값 리턴 로직
     def get_average_rating(self, obj):
         return obj.mainreviews.aggregate(Avg('rating'))['rating__avg']
 
@@ -52,6 +54,7 @@ class MainPostSerializer(serializers.ModelSerializer):
             'price',
             'start_date',
             'end_date',
+            'sentence',
         ]
         read_only_fields = ['id', 'writer', 'mainreviews', 'mainreviews_cnt', 'like_cnt', 'average_rating',]
 
@@ -82,12 +85,13 @@ class MainPostListSerializer(serializers.ModelSerializer):
             'location',
             'start_date',
             'end_date',
+            'sentence',
         ]
-        read_only_fields = ['id', 'writer', 'mainreviews', 'mainreviews_cnt', 'like_cnt', 'start_date', 'end_date',]
+        read_only_fields = ['id', 'writer', 'mainreviews', 'mainreviews_cnt', 'like_cnt', 'start_date', 'end_date', 'sentence']
 
 class MainReviewSerializer(serializers.ModelSerializer):
-    writer = CustomUserSerializer(source='writer.nickname', read_only=True)
-    #writer = serializers.CharField(source='writer.username', read_only=True)
+    #writer = CustomUserSerializer(source='writer.nickname', read_only=True)
+    writer = serializers.CharField(source='writer.nickname', read_only=True)
     mainpost = serializers.SerializerMethodField()
     mainrecoms = serializers.SerializerMethodField()
     mainrecoms_cnt = serializers.SerializerMethodField()
@@ -109,9 +113,9 @@ class MainReviewSerializer(serializers.ModelSerializer):
         read_only_fields = ['mainpost', 'id', 'writer', 'ticket', 'created_at', 'updated_at', 'mainrecoms', 'mainrecoms_cnt']
 
 class MainReviewCommentSerializer(serializers.ModelSerializer):
-    writer = CustomUserSerializer(source='writer.nickname', read_only=True)
+    #writer = CustomUserSerializer(source='writer.nickname', read_only=True)
     mainreview = serializers.SerializerMethodField()
-    #writer = serializers.CharField(source='writer.username', read_only=True)
+    writer = serializers.CharField(source='writer.nickname', read_only=True)
 
     def get_mainreview(self, instance):
         return instance.mainreview.content

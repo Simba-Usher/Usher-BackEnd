@@ -10,11 +10,11 @@ from rest_framework.serializers import ListField
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['email', 'nickname']  
+        fields = ['nickname']  
 
 class ComPostSerializer(serializers.ModelSerializer):
-    writer = CustomUserSerializer(source='writer.nickname', read_only=True)
-    #writer = serializers.CharField(source='writer.username', read_only=True)
+    #writer = CustomUserSerializer(source='writer.nickname', read_only=True)
+    writer = serializers.CharField(source='writer.nickname', read_only=True)
     comcomments = serializers.SerializerMethodField()
     image = serializers.ImageField(use_url=True, required=False)
     like_cnt = serializers.SerializerMethodField()
@@ -53,8 +53,8 @@ class ComPostSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'writer', 'created_at', 'updated_at', 'comcomments', 'comcomments_cnt', 'like_cnt', 'views']
 
 class ComPostListSerializer(serializers.ModelSerializer):
-    writer = CustomUserSerializer(source='writer.nickname', read_only=True)
-    #writer = serializers.CharField(source='writer.username', read_only=True)
+    #writer = CustomUserSerializer(source='writer.nickname', read_only=True)
+    writer = serializers.CharField(source='writer.nickname', read_only=True)
     comcomments_cnt = serializers.SerializerMethodField()
     like_cnt = serializers.SerializerMethodField()
     image = serializers.ImageField(use_url=True, required=False)
@@ -83,8 +83,8 @@ class ComPostListSerializer(serializers.ModelSerializer):
         read_only_fields = ['category', 'id', 'writer', 'created_at', 'updated_at', 'comcomments_cnt', 'like_cnt', 'views']
 
 class ComCommentSerializer(serializers.ModelSerializer):
-    writer = CustomUserSerializer(source='writer.nickname', read_only=True)
-    #writer = serializers.CharField(source='writer.username', read_only=True)
+    #writer = CustomUserSerializer(source='writer.nickname', read_only=True)
+    writer = serializers.CharField(source='writer.nickname', read_only=True)
     compost = serializers.SerializerMethodField()
     replies = serializers.SerializerMethodField()
 
@@ -101,9 +101,9 @@ class ComCommentSerializer(serializers.ModelSerializer):
         read_only_fields = ['compost', 'id', 'writer']
 
 class ComReplySerializer(serializers.ModelSerializer):
-    writer = CustomUserSerializer(source='writer.nickname', read_only=True)
+    #writer = CustomUserSerializer(source='writer.nickname', read_only=True)
     comcomment = serializers.SerializerMethodField()
-    #writer = serializers.CharField(source='writer.username', read_only=True)
+    writer = serializers.CharField(source='writer.nickname', read_only=True)
 
     def get_comcomment(self, instance):
         return instance.comcomment.content

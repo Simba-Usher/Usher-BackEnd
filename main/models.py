@@ -10,6 +10,7 @@ def image_upload_path(instance, filename):
 class MainPost(models.Model):
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=50)
+    sentence = models.CharField(max_length=30)
     content = models.TextField()
     image = models.ImageField(upload_to=image_upload_path, blank=True, null=True)
     price = models.PositiveIntegerField(default=0)
