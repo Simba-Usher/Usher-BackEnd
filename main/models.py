@@ -9,7 +9,7 @@ def image_upload_path(instance, filename):
 
 class MainPost(models.Model):
     id = models.AutoField(primary_key=True)
-    liked_users = models.ManyToManyField(CustomUser, related_name='liked_posts', blank=True, null=True)
+    liked_users = models.ManyToManyField(CustomUser, related_name='liked_posts', blank=True)
     title = models.CharField(max_length=50)
     sentence = models.CharField(max_length=30)
     content = models.TextField()
