@@ -72,12 +72,16 @@ class ComPostViewSet(viewsets.ModelViewSet):
         compost = self.get_object()
         user = request.user
 
+        # 로그인된 사용자인지 확인
+        if user.is_anonymous:
+            return Response({"detail": "로그인이 필요한 서비스입니다."}, status=status.HTTP_401_UNAUTHORIZED)
+
         try:
-            existing_reaction = CommunityReaction.objects.get(compost=compost, user=user, reaction="like")
+            existing_reaction = ComPostReaction.objects.get(compost=compost, user=user, reaction="like")
             existing_reaction.delete()
             return Response({"detail": "좋아요 취소"}, status=status.HTTP_200_OK)
-        except CommunityReaction.DoesNotExist:
-            CommunityReaction.objects.create(compost=compost, user=user, reaction="like")
+        except ComPostReaction.DoesNotExist:
+            ComPostReaction.objects.create(compost=compost, user=user, reaction="like")
             return Response({"detail": "좋아요!"}, status=status.HTTP_201_CREATED)
 
     #실시간 인기글

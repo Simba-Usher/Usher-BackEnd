@@ -56,10 +56,11 @@ class MainPostFilter(filters.FilterSet):
 class MainReviewFilter(filters.FilterSet):
     genre = filters.ChoiceFilter(choices=MainReview.RATING_CHOICES)
     price_range = OverlappingPriceRangeFilter()
+    mainpost = filters.ModelChoiceFilter(queryset=MainPost.objects.all())
 
     class Meta:
         model = MainReview
-        fields = ['genre', 'price_range']
+        fields = ['genre', 'price_range', 'mainpost']
 
 class MainPostViewSet(viewsets.ModelViewSet):
     queryset = MainPost.objects.annotate(
@@ -96,15 +97,19 @@ class MainPostViewSet(viewsets.ModelViewSet):
 
     @action(methods=["POST"], detail=True, permission_classes=[IsAuthenticated])
     def likes(self, request, pk=None):
-        compost = self.get_object()
+        mainpost = self.get_object()
         user = request.user
+
+        # 로그인된 사용자인지 확인
+        if user.is_anonymous:
+            return Response({"detail": "로그인이 필요한 서비스입니다."}, status=status.HTTP_401_UNAUTHORIZED)
 
         try:
             existing_reaction = MainPostReaction.objects.get(mainpost=mainpost, user=user, reaction="like")
             existing_reaction.delete()
             return Response({"detail": "좋아요 취소"}, status=status.HTTP_200_OK)
         except MainPostReaction.DoesNotExist:
-            MainPostReaction.objects.create(compost=compost, user=user, reaction="like")
+            MainPostReaction.objects.create(mainpost=mainpost, user=user, reaction="like")
             return Response({"detail": "좋아요!"}, status=status.HTTP_201_CREATED)
 
 #별점 높은 순
