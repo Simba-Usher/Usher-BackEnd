@@ -33,6 +33,8 @@ class CustomUser(AbstractUser):
     USERNAME_FIELD = 'nickname'
     REQUIRED_FIELDS = ['email'] 
 
+    username = None
+
     email = models.EmailField(unique=True) 
     nickname = models.CharField(max_length=6, unique=True)
     GRADE_CHOICES = [
