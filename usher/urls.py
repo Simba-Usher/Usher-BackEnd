@@ -23,8 +23,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('dj-rest-auth/', include('dj_rest_auth.urls')),
     path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')),
-    path('', include('user.urls')),
-    path('', include('community.urls')),
-    path('', include('main.urls')),
-    path('', include('mypage.urls')),
+    path('api/', include('user.urls')),
+    path('api/', include('community.urls')),
+    path('api/', include('main.urls')),
+    path('api/', include('mypage.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

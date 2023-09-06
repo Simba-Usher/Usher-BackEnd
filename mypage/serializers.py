@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from .models import *
-from rest_framework import serializers
 
 from main.models import *
 from community.models import *
@@ -10,6 +9,8 @@ from user.models import *
 from user.backends import *
 
 from dj_rest_auth.serializers import UserDetailsSerializer
+from django.contrib.auth import get_user_model
+
 
 class ProfileUpdateSerializer(UserDetailsSerializer):
     old_password = serializers.CharField(write_only=True, required=True)
@@ -26,13 +27,6 @@ class ProfileUpdateSerializer(UserDetailsSerializer):
         new_password_confirm = data.get('new_password_confirm')
         old_password = data.get('old_password') 
 
-    #닉네임 변경 시 유효성 검사 로직
-    def validate_nickname(self, value):
-        """ Check that nickname is unique. """
-        if get_user_model().objects.exclude(pk=self.instance.pk).filter(nickname=value).exists():
-            raise serializers.ValidationError("이미 사용 중인 닉네임입니다.")
-        return value
-
         if new_password or new_password_confirm:
             if not old_password:
                 raise serializers.ValidationError("기존 비밀번호를 입력해주세요.")
@@ -40,8 +34,13 @@ class ProfileUpdateSerializer(UserDetailsSerializer):
                 raise serializers.ValidationError("기존 비밀번호가 일치하지 않습니다.")
             if new_password != new_password_confirm:
                 raise serializers.ValidationError("새 비밀번호와 새 비밀번호 확인이 일치하지 않습니다.")
-
         return data
+
+    def validate_nickname(self, value):
+        """ Check that nickname is unique. """
+        if get_user_model().objects.exclude(pk=self.instance.pk).filter(nickname=value).exists():
+            raise serializers.ValidationError("이미 사용 중인 닉네임입니다.")
+        return value
 
     def update(self, instance, validated_data):
         if 'new_password' in validated_data:
@@ -75,4 +74,9 @@ class MemoSerializer(serializers.ModelSerializer):
 class PerformanceLike(serializers.Serializer):
     class Meta:
         model = MainPost
+        fields = '__all__'
+
+class ArticleLike(serializers.Serializer):
+    class Meta:
+        model = ComPost
         fields = '__all__'
