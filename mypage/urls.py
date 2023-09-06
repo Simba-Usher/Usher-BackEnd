@@ -10,6 +10,7 @@ router.register(r'memos', MemoViewSet, basename='memos')
 urlpatterns = [
     path('mypage/', include(router.urls)),
     path('mypage/ticket', TicketView.as_view(), name='ticket'),
+    path('mypage/ticket/<int:ticket_id>', TicketView.as_view(), name='ticket_detail'),
     path('mypage/profile', ProfileUpdateView.as_view(), name='profile_update'),
     path('mypage/liked-mainposts', LikedMainPostListView.as_view(), name='liked-mainposts'),
     path('mypage/liked-composts', LikedComPostListView.as_view(), name='liked-composts'),

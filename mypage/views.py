@@ -27,7 +27,7 @@ class TicketView(APIView):
         serializer = TicketSerializer(data=request.data)
         if serializer.is_valid():
             ticket_number = serializer.validated_data['ticket_number']
-            #memo = serializer.validated_data.get('memo', None)
+            #ticket_memo = serializer.validated_data.get('ticket_memo', None)
 
             
             # pandas로 엑셀 데이터 불러오기
@@ -38,6 +38,7 @@ class TicketView(APIView):
 
             if not row_data.empty:
                 desired_data = {
+                    "id": ticket.id,
                     "performance": value_to_str(row_data['공연코드'].values[0]),
                     "performance_location": value_to_str(row_data['공연장코드'].values[0]),
                     "performance_date": value_to_str(row_data['공연일시'].values[0]),
@@ -49,7 +50,8 @@ class TicketView(APIView):
                 ticket, created = Ticket.objects.update_or_create(
                     ticket_number=ticket_number,
                     defaults={
-                        "memo": memo,
+                        #"ticket_memo": ticket_memo,
+                        "user": request.user,
                         **desired_data 
                     }
                 )
@@ -57,6 +59,11 @@ class TicketView(APIView):
             else:
                 return Response({"error": "유효하지 않은 티켓입니다."}, status=400)
         return Response(serializer.errors, status=400)
+
+    def get(self, request, ticket_id):
+        ticket = get_object_or_404(Ticket, id=ticket_id)
+        serializer = TicketSerializer(ticket)
+        return Response(serializer.data, status=200)
 
 class MemoViewSet(viewsets.ModelViewSet):
     queryset = Memo.objects.all()

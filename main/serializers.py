@@ -55,6 +55,7 @@ class MainPostSerializer(serializers.ModelSerializer):
             'start_date',
             'end_date',
             'sentence',
+            'place',
         ]
         read_only_fields = ['id', 'writer', 'mainreviews', 'mainreviews_cnt', 'like_cnt', 'average_rating',]
 
@@ -70,6 +71,10 @@ class MainPostListSerializer(serializers.ModelSerializer):
 
     def get_mainreviews_cnt(self, instance):
         return instance.mainreviews.count()
+    
+    def get_average_rating(self, obj):
+        avg_rating = obj.mainreviews.aggregate(Avg('rating'))['rating__avg']
+        return avg_rating if avg_rating is not None else 0.0
         
     class Meta:
         model = MainPost
@@ -86,6 +91,7 @@ class MainPostListSerializer(serializers.ModelSerializer):
             'start_date',
             'end_date',
             'sentence',
+            'place',
         ]
         read_only_fields = ['id', 'writer', 'mainreviews', 'mainreviews_cnt', 'like_cnt', 'start_date', 'end_date', 'sentence']
 

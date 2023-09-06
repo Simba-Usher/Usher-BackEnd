@@ -11,6 +11,7 @@ class MainPost(models.Model):
     id = models.AutoField(primary_key=True)
     liked_users = models.ManyToManyField(CustomUser, related_name='liked_posts', blank=True)
     title = models.CharField(max_length=50)
+    place = models.CharField(max_length=30, blank=True, null=True)
     sentence = models.CharField(max_length=30)
     content = models.TextField()
     image = models.ImageField(upload_to=image_upload_path, blank=True, null=True)

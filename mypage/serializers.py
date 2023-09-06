@@ -59,7 +59,10 @@ class ProfileUpdateSerializer(UserDetailsSerializer):
 class TicketSerializer(serializers.ModelSerializer):
     class Meta:
             model = Ticket
-            fields = ('ticket_number', 'ticket_memo')
+            fields =  ['id', 'ticket_number', 'performance', 'performance_location', 
+            'performance_date', 'reservation_site', 'discount_method', 'price']
+            read_only_fields = ['id', 'performance', 'performance_location', 
+            'performance_date', 'reservation_site', 'discount_method', 'price']
 
 class MemoSerializer(serializers.ModelSerializer):
     class Meta:

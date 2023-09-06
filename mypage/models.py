@@ -11,7 +11,7 @@ class Ticket(models.Model):
     reservation_site = models.CharField(max_length=20)
     discount_method = models.CharField(max_length=10)
     price = models.PositiveIntegerField()
-    ticket_memo = models.TextField(max_length=200, blank=True, null=True)
+    #ticket_memo = models.TextField(max_length=200, blank=True, null=True)
 
     def __str__(self):
         return self.ticket_number

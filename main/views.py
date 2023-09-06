@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from django.db.models import Count, Q, Avg
+from django.db.models import Count, Q, Avg, FloatField
+from django.db.models.functions import Coalesce
 
 from rest_framework import viewsets, mixins
 from rest_framework.response import Response
@@ -115,7 +116,9 @@ class MainPostViewSet(viewsets.ModelViewSet):
 #별점 높은 순
     @action(detail=False, methods=["GET"])
     def rating(self, request):
-        mainposts = MainPost.objects.annotate(average_rating=Avg('mainreviews__rating')).order_by('-average_rating')
+        mainposts = MainPost.objects.annotate(
+            average_rating=Coalesce(Avg('mainreviews__rating'), 0, output_field=FloatField())
+        ).order_by('-average_rating')
         serializer = MainPostListSerializer(mainposts, many=True)
         return Response(serializer.data)
 
