@@ -7,6 +7,7 @@ def image_upload_path(instance, filename):
 
 class ComPost(models.Model):
     id = models.AutoField(primary_key=True)
+    liked_users = models.ManyToManyField(CustomUser, related_name='liked_composts')
     writer = models.ForeignKey(CustomUser, on_delete=models.CASCADE, blank=False, null=True)
     title = models.CharField(max_length=20)
     content = models.TextField(max_length=1000)

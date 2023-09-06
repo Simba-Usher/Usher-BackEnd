@@ -5,10 +5,13 @@ from rest_framework import viewsets, mixins, generics
 from django.shortcuts import get_object_or_404
 from rest_framework.mixins import UpdateModelMixin, ListModelMixin
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.generics import GenericAPIView
+from rest_framework.generics import GenericAPIView, ListAPIView
 
 from .models import *
 from .serializers import *
+
+from main.serializers import MainPostListSerializer, MainReviewSerializer
+from community.serializers import ComPostListSerializer
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -69,8 +72,8 @@ class ProfileUpdateView(UpdateModelMixin, generics.GenericAPIView):
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
 
-class ShowLikeListView(ListModelMixin, GenericAPIView):
-    serializer_class = MainPostSerializer
+class LikedMainPostListView(ListModelMixin, GenericAPIView):
+    serializer_class = MainPostListSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -78,3 +81,27 @@ class ShowLikeListView(ListModelMixin, GenericAPIView):
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
+
+class LikedComPostListView(ListModelMixin, GenericAPIView):
+    serializer_class = ComPostListSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return self.request.user.liked_composts.all()
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+class MyMainReviewListView(ListAPIView):
+    serializer_class = MainReviewSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return MainReview.objects.filter(writer=self.request.user)
+
+class MyComPostListView(ListAPIView):
+    serializer_class = ComPostListSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return ComPost.objects.filter(writer=self.request.user)
