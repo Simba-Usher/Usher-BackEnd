@@ -40,15 +40,12 @@ class ComPostViewSet(viewsets.ModelViewSet):
     pagination_class = ComPostPagination
     serializer_class = ComPostSerializer
 
-    permission_classes = [AllowAny]
-
-
-    #def get_permissions(self):
-    #    if self.action in ["destroy"]:
-    #        return [IsOwnerOrReadOnly()]
-    #    elif self.action in ["create"]:
-    #        return [IsAuthenticated()]
-    #    return []
+    def get_permissions(self):
+        if self.action in ["destroy"]:
+            return [IsOwnerOrReadOnly()]
+        elif self.action in ["create"]:
+            return [IsAuthenticated()]
+        return []
     
     def get_serializer_class(self):
         if self.action == "list":
@@ -83,8 +80,8 @@ class ComPostViewSet(viewsets.ModelViewSet):
             existing_reaction = CommunityReaction.objects.get(compost=compost, user=user, reaction="like")
             existing_reaction.delete()
             return Response({"detail": "좋아요 취소"}, status=status.HTTP_200_OK)
-        except CommunityReaction.DoesNotExist:
-            CommunityReaction.objects.create(compost=compost, user=user, reaction="like")
+        except ComPostReaction.DoesNotExist:
+            ComPostReaction.objects.create(compost=compost, user=user, reaction="like")
             return Response({"detail": "좋아요!"}, status=status.HTTP_201_CREATED)
 
     #실시간 인기글
@@ -137,13 +134,10 @@ class ComCommentViewSet(
     queryset = ComComment.objects.all()
     serializer_class = ComCommentSerializer
 
-    permission_classes = [AllowAny]
-
-
-    #def get_permissions(self):
-    #    if self.action in ["create", "destroy"]:
-    #        return [IsOwnerOrReadOnly()]
-    #    return []
+    def get_permissions(self):
+        if self.action in ["create", "destroy"]:
+            return [IsOwnerOrReadOnly()]
+        return []
 
     def get_objects(self):
         obj = super().get_object()
@@ -159,13 +153,10 @@ class CommunityComCommentViewSet(
     serializer_class = ComCommentSerializer
     #permission_classes = [IsAuthenticated]
 
-    permission_classes = [AllowAny]
-
-
-    #def get_permissions(self):
-    #    if self.action in ['create', 'destroy']:
-    #        return [IsAuthenticated()]
-    #    return []
+    def get_permissions(self):
+        if self.action in ['create', 'destroy']:
+            return [IsAuthenticated()]
+        return []
 
     def get_queryset(self):
         compost = self.kwargs.get("compost_id")
@@ -189,14 +180,12 @@ class CommunityComReplyViewSet(
     queryset = ComReply.objects.all()
     serializer_class = ComReplySerializer
 
-    permission_classes = [AllowAny]
-
 
     # url 에서 comcomment_id 를 가져옴
-    #def get_queryset(self):
-    #    comcomment = self.kwargs.get("comcomment_id")
-    #    queryset = ComReply.objects.filter(comcomment_id=comcomment)
-    #    return queryset
+    def get_queryset(self):
+        comcomment = self.kwargs.get("comcomment_id")
+        queryset = ComReply.objects.filter(comcomment_id=comcomment)
+        return queryset
     
     def get_permissions(self):
         if self.action in ['create', 'destroy']:
@@ -220,11 +209,8 @@ class ComReplyViewSet(
     queryset = ComReply.objects.all()
     serializer_class = ComReplySerializer
 
-    permission_classes = [AllowAny]
-
-
     # 읽기만 가능
-    #def get_permissions(self):
-    #    if self.action in ['create', 'destroy']:
-    #        return [IsOwnerOrReadOnly()]
-    #    return []
+    def get_permissions(self):
+        if self.action in ['create', 'destroy']:
+            return [IsOwnerOrReadOnly()]
+        return []

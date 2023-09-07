@@ -83,7 +83,6 @@ class MainPostListSerializer(serializers.ModelSerializer):
             'id',
             'title',
             'content',
-            'mainreviews',
             'mainreviews_cnt',
             'image',
             'like_cnt',
@@ -94,17 +93,21 @@ class MainPostListSerializer(serializers.ModelSerializer):
             'sentence',
             'place',
         ]
-        read_only_fields = ['id', 'writer', 'mainreviews', 'mainreviews_cnt', 'like_cnt', 'start_date', 'end_date', 'sentence']
+        read_only_fields = ['id', 'like_cnt', 'writer', 'mainreviews_cnt', 'like_cnt', 'start_date', 'end_date', 'sentence']
 
 class MainReviewSerializer(serializers.ModelSerializer):
     #writer = CustomUserSerializer(source='writer.nickname', read_only=True)
     writer = serializers.CharField(source='writer.nickname', read_only=True)
+    like_cnt = serializers.SerializerMethodField()
     mainpost = serializers.SerializerMethodField()
     mainrecoms = serializers.SerializerMethodField()
     mainrecoms_cnt = serializers.SerializerMethodField()
     ticket = TicketReviewSerializer(read_only=True)
     #ticket = serializers.PrimaryKeyRelatedField(queryset=Ticket.objects.all(), many=False)
     
+    def get_like_cnt(self, instance):
+        return instance.reactions.filter(reaction='like').count()
+
     def get_ticket(self, obj):
         return serializers.PrimaryKeyRelatedField(queryset=Ticket.objects.filter(writer=self.context['request'].user))
 
@@ -121,14 +124,18 @@ class MainReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = MainReview
         fields = '__all__'
-        read_only_fields = ['mainpost', 'id', 'writer', 'ticket', 'created_at', 'updated_at', 'mainrecoms', 'mainrecoms_cnt']
+        read_only_fields = ['id', 'writer', 'ticket', 'created_at', 'updated_at', 'mainrecoms', 'mainrecoms_cnt', 'like_cnt']
 
 class MainReviewListSerializer(serializers.ModelSerializer):
     writer = serializers.CharField(source='writer.nickname', read_only=True)
     mainpost = serializers.SerializerMethodField()
     mainrecoms_cnt = serializers.SerializerMethodField()
     ticket = TicketReviewSerializer(read_only=True)  # 티켓의 세부 정보도 표시
-    
+    like_cnt = serializers.SerializerMethodField()
+
+    def get_like_cnt(self, instance):
+        return instance.reactions.filter(reaction='like').count()
+
     def get_mainpost(self, instance):
         return instance.mainpost.title
     
@@ -146,9 +153,10 @@ class MainReviewListSerializer(serializers.ModelSerializer):
             'ticket',
             'created_at',
             'updated_at',
+            'like_cnt',
         ]
         read_only_fields = [
-            'id', 'writer',  'ticket', 'created_at', 'updated_at', 'mainrecoms_cnt'
+            'id', 'writer',  'ticket', 'created_at', 'updated_at', 'mainrecoms_cnt', 'like_cnt',
         ]
 
 class MainReviewCommentSerializer(serializers.ModelSerializer):

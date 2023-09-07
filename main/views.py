@@ -26,14 +26,25 @@ class ThousandFilter(filters.NumberFilter):
         validate_thousand(value)
         return super().filter(qs, value)
 
+#class OverlappingPriceRangeFilter(Filter):
+#    def filter(self, qs, value):
+#        if value:
+#            min_price, max_price = value
+#            # Check for overlapping ranges using Q objects
+#            overlapping = Q(price__lte=max_price, price__gte=min_price)
+#            return qs.filter(overlapping)
+#        return qs
+
 class OverlappingPriceRangeFilter(Filter):
     def filter(self, qs, value):
         if value:
-            min_price, max_price = value
-            # Check for overlapping ranges using Q objects
-            overlapping = Q(price__lte=max_price, price__gte=min_price)
-            return qs.filter(overlapping)
+            min_price = self.parent.form.cleaned_data.get('price_range_0')
+            max_price = self.parent.form.cleaned_data.get('price_range_1')
+            if min_price and max_price:
+                overlapping = Q(price__lte=max_price, price__gte=min_price)
+                return qs.filter(overlapping)
         return qs
+
 
 class OverlappingDateRangeFilter(Filter):
     def filter(self, qs, value):
@@ -55,13 +66,13 @@ class MainPostFilter(filters.FilterSet):
         fields = ['genre', 'location', 'price_range', 'date_range']
 
 class MainReviewFilter(filters.FilterSet):
-    genre = filters.ChoiceFilter(choices=MainReview.RATING_CHOICES)
+    rating = filters.ChoiceFilter(choices=MainReview.RATING_CHOICES)
     price_range = OverlappingPriceRangeFilter()
     mainpost = filters.ModelChoiceFilter(queryset=MainPost.objects.all())
 
     class Meta:
         model = MainReview
-        fields = ['genre', 'price_range', 'mainpost']
+        fields = ['rating', 'price_range', 'mainpost']
 
 class MainPostViewSet(viewsets.ModelViewSet):
     queryset = MainPost.objects.annotate(
@@ -77,12 +88,12 @@ class MainPostViewSet(viewsets.ModelViewSet):
     search_fields = ["title"]
     #ordering_fields = ["-created_at"]
     serializer_class = MainPostSerializer
-    permission_classes = [AllowAny]
+    #permission_classes = [IsAdminUser]
     
-    #def get_permissions(self):
-    #    if self.action in ["create", "destroy", "update", "partial_update"]:
-    #        return [IsAdminUser()]
-    #    return []
+    def get_permissions(self):
+        if self.action in ["create", "destroy", "update", "partial_update"]:
+            return [IsAdminUser()]
+        return []
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -145,29 +156,54 @@ class MainReviewViewSet(
     filterset_fields = ["title"]
     search_fields = ["title"]
 
-    permission_classes = [AllowAny]
-
-
     def get_queryset(self):
         mainpost = self.kwargs.get("mainpost_id")
         queryset = MainReview.objects.filter(mainpost_id=mainpost)
         return queryset
 
-    #def get_permissions(self):
-    #    if self.action in ["create", "destroy"]:
-    #        return [IsOwnerOrReadOnly()]
-    #    return []
+    def get_permissions(self):
+        if self.action in ["create", "destroy"]:
+            return [IsOwnerOrReadOnly()]
+        return []
 
     def get_objects(self):
         obj = super().get_object()
         return obj
 
+    @action(methods=["POST"], detail=True, permission_classes=[IsAuthenticated])
+    def likes(self, request, pk=None):
+        mainreview = self.get_object()
+        user = request.user
+
+        # 로그인된 사용자인지 확인
+        if user.is_anonymous:
+            return Response({"detail": "로그인이 필요한 서비스입니다."}, status=status.HTTP_401_UNAUTHORIZED)
+
+        try:
+            existing_reaction = MainReviewReaction.objects.get(mainreview=mainreview, user=user, reaction="like")
+            existing_reaction.delete()
+            return Response({"detail": "좋아요 취소"}, status=status.HTTP_200_OK)
+        except MainReviewReaction.DoesNotExist:
+            MainReviewReaction.objects.create(mainreview=mainreview, user=user, reaction="like")
+            return Response({"detail": "좋아요!"}, status=status.HTTP_201_CREATED)
+
+
 #게시글 최근 순
-@action(detail=False, methods=["GET"])
-def latest(self, request):
-    mainreviews = MainReview.objects.all().order_by("-created_at")
-    serializer = self.get_serializer(mainreviews, many=True)
-    return Response(serializer.data)
+    @action(detail=False, methods=["GET"])
+    def latest(self, request, mainpost_id=None):
+        mainreviews = MainReview.objects.all().order_by("-created_at")
+        serializer = self.get_serializer(mainreviews, many=True)
+        return Response(serializer.data)
+
+#게시글 공감 많은 순
+    @action(detail=False, methods=["GET"])
+    def popular(self, request, mainpost_id=None):
+        mainreviews = MainReview.objects.annotate(
+            like_cnt=Count("reactions", filter=Q(reactions__reaction="like"), distinct=True)
+        ).order_by("-like_cnt")
+        serializer = self.get_serializer(mainreviews, many=True)
+        return Response(serializer.data)
+
 
 #리뷰 작성 뷰셋 
 class MainReviewWriteViewSet(
@@ -177,7 +213,7 @@ class MainReviewWriteViewSet(
     mixins.RetrieveModelMixin,
     ):
     serializer_class = MainReviewSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
 #    def get_permissions(self):
 #        if self.action in ['create', 'destroy']:
@@ -214,8 +250,6 @@ class MainReviewCommentViewSet(
     ):
     #queryset = MainReviewComment.objects.all()
     serializer_class = MainReviewCommentSerializer
-    permission_classes = [AllowAny]
-
 
     def get_queryset(self):
         mainreview = self.kwargs.get("mainreview_id")
@@ -223,10 +257,10 @@ class MainReviewCommentViewSet(
         return queryset
 
     # 읽기만 가능
-#    def get_permissions(self):
-#        if self.action in ['create', 'destroy']:
-#            return [IsOwnerOrReadOnly()]
-#        return []
+    def get_permissions(self):
+        if self.action in ['create', 'destroy']:
+            return [IsOwnerOrReadOnly()]
+        return []
 
 #리뷰 댓글 작성 관련 뷰셋
 class MainReviewCommentWriteViewSet(
@@ -238,18 +272,15 @@ class MainReviewCommentWriteViewSet(
     queryset = MainReviewComment.objects.all()
     serializer_class = MainReviewCommentSerializer
 
-    permission_classes = [AllowAny]
-
-
     def get_queryset(self):
         mainreview = self.kwargs.get("mainreview_id")
         queryset = MainReviewComment.objects.filter(mainreview_id=mainreview)
         return queryset
     
-    #def get_permissions(self):
-    #    if self.action in ['create', 'destroy']:
-    #        return [IsOwnerOrReadOnly()]
-    #    return []
+    def get_permissions(self):
+        if self.action in ['create', 'destroy']:
+            return [IsOwnerOrReadOnly()]
+        return []
     
     def create(self, request, mainreview_id=None):
         mainreview = get_object_or_404(MainReview, id=mainreview_id)
