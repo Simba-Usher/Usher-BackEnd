@@ -182,7 +182,7 @@ class MainReviewWriteViewSet(
             return Response({"error": "티켓을 선택해주세요."}, status=400)
         ticket = get_object_or_404(Ticket, id=ticket_id)
 
-        if ticket.performance != mainpost.performance:
+        if ticket.performance != mainpost.title:
             return Response({"error": "티켓의 공연명과 글의 공연명이 일치하지 않습니다."}, status=400)
 
         serializer = self.get_serializer(data=request.data)
@@ -230,6 +230,6 @@ class MainReviewCommentWriteViewSet(
         mainreview = get_object_or_404(MainReview, id=mainreview_id)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(mainreview=mainreview)
+        serializer.save(mainreview=mainreview, writer=request.user)
         return Response(serializer.data)
 

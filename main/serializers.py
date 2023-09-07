@@ -110,8 +110,11 @@ class MainReviewSerializer(serializers.ModelSerializer):
         return instance.mainpost.title
     
     def get_mainrecoms(self, instance):
-        serializers = MainReComsSerializer(instance.mainrecoms.all(), many=True)
+        serializers = MainReviewCommentSerializer(instance.mainrecoms.all(), many=True)
         return serializers.data
+    
+    def get_mainrecoms_cnt(self, obj):
+        return obj.mainrecoms.count()
 
     class Meta:
         model = MainReview
@@ -136,5 +139,5 @@ class MainReviewCommentSerializer(serializers.ModelSerializer):
             'mainreview',
         ]
         read_only_fields = [
-            'mainreview', 'writer', 'created_at'
+            'id', 'mainreview', 'writer', 'created_at'
         ]

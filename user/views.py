@@ -18,11 +18,16 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
         if response.status_code == 200:
-            user = response.data['user']
-            if user:
-                response.data.update({"nickname": user.nickname})
+            user_data = response.data.get('user', {})
+            nickname = user_data.get('nickname', None)
+            email = user_data.get('email', None)
+            if nickname:
+                response.data.update({"nickname": nickname})
+            if email:
+                response.data.update({"email": email})
             del response.data['user']  # user 객체는 응답에서 제거
         return response
+
 
 
 class ConfirmEmailView(APIView):

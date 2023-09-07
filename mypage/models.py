@@ -3,7 +3,7 @@ from django.conf import settings
 
 class Ticket(models.Model):
     id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    writer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     ticket_number = models.CharField(max_length=50, unique=True)
     performance = models.CharField(max_length=50)
     performance_location = models.CharField(max_length=20)

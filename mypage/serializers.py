@@ -13,7 +13,7 @@ from django.contrib.auth import get_user_model
 
 
 class ProfileUpdateSerializer(UserDetailsSerializer):
-    old_password = serializers.CharField(write_only=True, required=True)
+    old_password = serializers.CharField(write_only=True)
     new_password = serializers.CharField(write_only=True, required=False)
     new_password_confirm = serializers.CharField(write_only=True, required=False)
 
