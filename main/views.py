@@ -77,12 +77,12 @@ class MainPostViewSet(viewsets.ModelViewSet):
     search_fields = ["title"]
     #ordering_fields = ["-created_at"]
     serializer_class = MainPostSerializer
-    #permission_classes = [IsAdminUser]
+    permission_classes = [AllowAny]
     
-    def get_permissions(self):
-        if self.action in ["create", "destroy", "update", "partial_update"]:
-            return [IsAdminUser()]
-        return []
+    #def get_permissions(self):
+    #    if self.action in ["create", "destroy", "update", "partial_update"]:
+    #        return [IsAdminUser()]
+    #    return []
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -136,23 +136,38 @@ class MainReviewViewSet(
     mixins.DestroyModelMixin,
     mixins.ListModelMixin
     ):
-    queryset = MainReview.objects.all()
+    #queryset = MainReview.objects.all()
     serializer_class = MainReviewSerializer
-
+    
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_class = MainReviewFilter
 
     filterset_fields = ["title"]
     search_fields = ["title"]
 
-    def get_permissions(self):
-        if self.action in ["create", "destroy"]:
-            return [IsOwnerOrReadOnly()]
-        return []
+    permission_classes = [AllowAny]
+
+
+    def get_queryset(self):
+        mainpost = self.kwargs.get("mainpost_id")
+        queryset = MainReview.objects.filter(mainpost_id=mainpost)
+        return queryset
+
+    #def get_permissions(self):
+    #    if self.action in ["create", "destroy"]:
+    #        return [IsOwnerOrReadOnly()]
+    #    return []
 
     def get_objects(self):
         obj = super().get_object()
         return obj
+
+#게시글 최근 순
+@action(detail=False, methods=["GET"])
+def latest(self, request):
+    mainreviews = MainReview.objects.all().order_by("-created_at")
+    serializer = self.get_serializer(mainreviews, many=True)
+    return Response(serializer.data)
 
 #리뷰 작성 뷰셋 
 class MainReviewWriteViewSet(
@@ -162,7 +177,7 @@ class MainReviewWriteViewSet(
     mixins.RetrieveModelMixin,
     ):
     serializer_class = MainReviewSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
 #    def get_permissions(self):
 #        if self.action in ['create', 'destroy']:
@@ -197,14 +212,21 @@ class MainReviewCommentViewSet(
     mixins.ListModelMixin, 
     mixins.RetrieveModelMixin
     ):
-    queryset = MainReviewComment.objects.all()
+    #queryset = MainReviewComment.objects.all()
     serializer_class = MainReviewCommentSerializer
+    permission_classes = [AllowAny]
+
+
+    def get_queryset(self):
+        mainreview = self.kwargs.get("mainreview_id")
+        queryset = MainReviewComment.objects.filter("mainreview_id=mainreview")
+        return queryset
 
     # 읽기만 가능
-    def get_permissions(self):
-        if self.action in ['create', 'destroy']:
-            return [IsOwnerOrReadOnly()]
-        return []
+#    def get_permissions(self):
+#        if self.action in ['create', 'destroy']:
+#            return [IsOwnerOrReadOnly()]
+#        return []
 
 #리뷰 댓글 작성 관련 뷰셋
 class MainReviewCommentWriteViewSet(
@@ -216,15 +238,18 @@ class MainReviewCommentWriteViewSet(
     queryset = MainReviewComment.objects.all()
     serializer_class = MainReviewCommentSerializer
 
+    permission_classes = [AllowAny]
+
+
     def get_queryset(self):
         mainreview = self.kwargs.get("mainreview_id")
         queryset = MainReviewComment.objects.filter(mainreview_id=mainreview)
         return queryset
     
-    def get_permissions(self):
-        if self.action in ['create', 'destroy']:
-            return [IsOwnerOrReadOnly()]
-        return []
+    #def get_permissions(self):
+    #    if self.action in ['create', 'destroy']:
+    #        return [IsOwnerOrReadOnly()]
+    #    return []
     
     def create(self, request, mainreview_id=None):
         mainreview = get_object_or_404(MainReview, id=mainreview_id)

@@ -64,6 +64,13 @@ class TicketSerializer(serializers.ModelSerializer):
             read_only_fields = ['id', 'performance', 'performance_location', 
             'performance_date', 'reservation_site', 'discount_method', 'price']
 
+class TicketReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ticket
+        fields = ['performance_date', 'reservation_site', 'discount_method', 'price']
+        read_only_fields = ['performance_date', 'reservation_site', 'discount_method', 'price']
+
+
 class MemoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Memo

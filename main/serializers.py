@@ -4,6 +4,7 @@ from rest_framework.serializers import ListField
 from django.db.models import Avg
 
 from mypage.models import Ticket
+from mypage.serializers import TicketReviewSerializer
 
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -101,7 +102,8 @@ class MainReviewSerializer(serializers.ModelSerializer):
     mainpost = serializers.SerializerMethodField()
     mainrecoms = serializers.SerializerMethodField()
     mainrecoms_cnt = serializers.SerializerMethodField()
-    ticket = serializers.SerializerMethodField()
+    ticket = TicketReviewSerializer(read_only=True)
+    #ticket = serializers.PrimaryKeyRelatedField(queryset=Ticket.objects.all(), many=False)
     
     def get_ticket(self, obj):
         return serializers.PrimaryKeyRelatedField(queryset=Ticket.objects.filter(writer=self.context['request'].user))
@@ -120,6 +122,34 @@ class MainReviewSerializer(serializers.ModelSerializer):
         model = MainReview
         fields = '__all__'
         read_only_fields = ['mainpost', 'id', 'writer', 'ticket', 'created_at', 'updated_at', 'mainrecoms', 'mainrecoms_cnt']
+
+class MainReviewListSerializer(serializers.ModelSerializer):
+    writer = serializers.CharField(source='writer.nickname', read_only=True)
+    mainpost = serializers.SerializerMethodField()
+    mainrecoms_cnt = serializers.SerializerMethodField()
+    ticket = TicketReviewSerializer(read_only=True)  # 티켓의 세부 정보도 표시
+    
+    def get_mainpost(self, instance):
+        return instance.mainpost.title
+    
+    def get_mainrecoms_cnt(self, obj):
+        return obj.mainrecoms.count()
+
+    class Meta:
+        model = MainReview
+        fields = [
+            'id',
+            'writer',
+            'content',
+            'rating',
+            'mainrecoms_cnt',
+            'ticket',
+            'created_at',
+            'updated_at',
+        ]
+        read_only_fields = [
+            'id', 'writer',  'ticket', 'created_at', 'updated_at', 'mainrecoms_cnt'
+        ]
 
 class MainReviewCommentSerializer(serializers.ModelSerializer):
     #writer = CustomUserSerializer(source='writer.nickname', read_only=True)

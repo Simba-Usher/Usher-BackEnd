@@ -28,7 +28,6 @@ class TicketView(APIView):
         if serializer.is_valid():
             ticket_number = serializer.validated_data['ticket_number']
             #ticket_memo = serializer.validated_data.get('ticket_memo', None)
-
             
             # pandas로 엑셀 데이터 불러오기
             df = pd.read_excel('static/KOPIS_data1.xlsx')
@@ -41,7 +40,7 @@ class TicketView(APIView):
                     "performance": value_to_str(row_data['공연코드'].values[0]),
                     "performance_location": value_to_str(row_data['공연장코드'].values[0]),
                     "performance_date": value_to_str(row_data['공연일시'].values[0]),
-                    "reservation_site": value_to_str(row_data['공연일시'].values[0]),
+                    "reservation_site": value_to_str(row_data['전송사업자명'].values[0]),
                     "discount_method": value_to_str(row_data['할인종류명(전송처)'].values[0]),
                     "price": value_to_str(row_data['예매/취소금액'].values[0]),
                 }

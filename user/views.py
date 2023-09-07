@@ -13,7 +13,8 @@ from dj_rest_auth.views import LogoutView
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = [AllowAny]
+    
 
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
