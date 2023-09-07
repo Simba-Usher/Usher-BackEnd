@@ -29,7 +29,6 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         return response
 
 
-
 class ConfirmEmailView(APIView):
     permission_classes = [AllowAny]
 
