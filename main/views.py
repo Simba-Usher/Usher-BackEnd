@@ -171,7 +171,7 @@ class MainReviewViewSet(
         return obj
 
     @action(methods=["POST"], detail=True, permission_classes=[IsAuthenticated])
-    def likes(self, request, pk=None):
+    def likes(self, request, mainpost_id=None, pk=None):
         mainreview = self.get_object()
         user = request.user
 

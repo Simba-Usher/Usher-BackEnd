@@ -6,6 +6,7 @@ import random
 
 from django.contrib.auth.models import BaseUserManager
 
+
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, nickname, password=None, **extra_fields):
         if not email:
@@ -37,6 +38,8 @@ class CustomUser(AbstractUser):
 
     email = models.EmailField(unique=True) 
     nickname = models.CharField(max_length=6, unique=True)
+    liked_posts = models.ManyToManyField('main.MainPost', related_name="likers")
+
     GRADE_CHOICES = [
         ('리허설', '리허설'),
         ('오버츄어', '오버츄어'),

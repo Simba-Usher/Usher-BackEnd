@@ -9,7 +9,7 @@ def image_upload_path(instance, filename):
 
 class MainPost(models.Model):
     id = models.AutoField(primary_key=True)
-    liked_users = models.ManyToManyField(CustomUser, related_name='liked_posts', blank=True)
+    liked_users = models.ManyToManyField(CustomUser, related_name="liked_mainposts")
     title = models.CharField(max_length=50)
     place = models.CharField(max_length=30, blank=True, null=True)
     sentence = models.CharField(max_length=30)
@@ -63,7 +63,8 @@ class MainReview(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     ticket  = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name='mainreviews')
-    writer = models.ForeignKey(CustomUser, on_delete=models.CASCADE, blank=False, null=True)
+    writer = models.ForeignKey('user.CustomUser', on_delete=models.CASCADE, blank=False, null=True)
+    #writer = models.ForeignKey(CustomUser, on_delete=models.CASCADE, blank=False, null=True)
     RATING_CHOICES = [
         (1, '1점'),
         (2, '2점'),
