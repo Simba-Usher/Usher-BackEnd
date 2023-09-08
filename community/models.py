@@ -26,7 +26,7 @@ class ComPost(models.Model):
 
 class ComComment(models.Model):
     id = models.AutoField(primary_key=True)
-    compost= models.ForeignKey(ComPost, blank=True, null=True, on_delete=models.CASCADE, related_name='comcomments')
+    compost= models.ForeignKey(ComPost, on_delete=models.CASCADE, related_name='comcomments')
     content = models.TextField(max_length=500, blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

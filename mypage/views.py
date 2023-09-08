@@ -86,7 +86,7 @@ class LikedMainPostListView(ListModelMixin, GenericAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return self.request.user.liked_posts.all()
+        return self.request.user.liked_mainposts.all()
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)

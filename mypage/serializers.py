@@ -55,7 +55,6 @@ class ProfileUpdateSerializer(UserDetailsSerializer):
 
         return super(ProfileUpdateSerializer, self).update(instance, validated_data)
 
-
 class TicketSerializer(serializers.ModelSerializer):
     class Meta:
             model = Ticket
@@ -69,7 +68,6 @@ class TicketReviewSerializer(serializers.ModelSerializer):
         model = Ticket
         fields = ['performance_date', 'reservation_site', 'discount_method', 'price']
         read_only_fields = ['performance_date', 'reservation_site', 'discount_method', 'price']
-
 
 class MemoSerializer(serializers.ModelSerializer):
     class Meta:
