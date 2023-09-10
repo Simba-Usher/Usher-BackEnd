@@ -80,9 +80,10 @@ class ComPostViewSet(viewsets.ModelViewSet):
             existing_reaction = CommunityReaction.objects.get(compost=compost, user=user, reaction="like")
             existing_reaction.delete()
             return Response({"detail": "좋아요 취소"}, status=status.HTTP_200_OK)
-        except tion.DoesNotExist:
-            ComPostReaction.objects.create(compost=compost, user=user, reaction="like")
+        except CommunityReaction.DoesNotExist:
+            CommunityReaction.objects.create(compost=compost, user=user, reaction="like")
             return Response({"detail": "좋아요!"}, status=status.HTTP_201_CREATED)
+
 
     #실시간 인기글
     @action(detail=False, methods=["GET"])
