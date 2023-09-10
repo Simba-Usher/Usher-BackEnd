@@ -4,8 +4,8 @@ from .views import *
 
 app_name = "mypage"
 
-#router = SimpleRouter(trailing_slash=False)
-#router.register(r'memos', MemoViewSet, basename='memos')
+router = SimpleRouter(trailing_slash=False)
+router.register(r'memos', MemoViewSet, basename='memos')
 
 urlpatterns = [
     #path('mypage/', include(router.urls)),
@@ -16,4 +16,5 @@ urlpatterns = [
     path('mypage/liked-composts', LikedComPostListView.as_view(), name='liked-composts'),
     path('mypage/myreviews', MyMainReviewListView.as_view(), name='myreviews'),
     path('mypage/mycomposts', MyComPostListView.as_view(), name='mycomposts'),
+    
 ]
