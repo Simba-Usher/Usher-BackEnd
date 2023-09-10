@@ -120,7 +120,7 @@ class ComPostViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["GET"])
     def views(self, request):
         queryset = ComPost.objects.order_by('-views')
-        page = self.paginate_queryset(composts)  
+        page = self.paginate_queryset(queryset)  
         serializer = self.get_serializer(page, many=True)
         return self.get_paginated_response(serializer.data)  
 

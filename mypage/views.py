@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import viewsets, mixins, generics
 from django.shortcuts import get_object_or_404
-from rest_framework.mixins import UpdateModelMixin, ListModelMixin
+from rest_framework.mixins import UpdateModelMixin, ListModelMixin, RetrieveModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import GenericAPIView, ListAPIView
 
@@ -81,7 +81,10 @@ class ProfileUpdateView(UpdateModelMixin, generics.GenericAPIView):
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
 
-class LikedMainPostListView(ListModelMixin, GenericAPIView):
+class LikedMainPostListView(
+    mixins.ListModelMixin, 
+    mixins.RetrieveModelMixin,
+    generics.GenericAPIView):
     serializer_class = MainPostListSerializer
     permission_classes = [IsAuthenticated]
 
