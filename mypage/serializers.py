@@ -58,7 +58,7 @@ class ProfileUpdateSerializer(UserDetailsSerializer):
 class TicketSerializer(serializers.ModelSerializer):
     class Meta:
             model = Ticket
-            fields =  ['id', 'ticket_number', 'performance', 'performance_location', 
+            fields =  ['id', 'ticket_memo', 'ticket_number', 'performance', 'performance_location', 
             'performance_date', 'reservation_site', 'discount_method', 'price']
             read_only_fields = ['id', 'performance', 'performance_location', 
             'performance_date', 'reservation_site', 'discount_method', 'price']
@@ -77,14 +77,3 @@ class MemoSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return Memo.objects.create(**validated_data)
-
-#내가 좋아요 한 공연 글 모음
-#class ShowLike(serializers.Serializer):
-#    class Meta:
-#        model = MainPost
-#        fields = '__all__'
-
-#class ArticleLike(serializers.Serializer):
-#    class Meta:
-#        model = ComPost
-#        fields = '__all__'

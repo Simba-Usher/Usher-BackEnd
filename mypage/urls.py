@@ -16,5 +16,5 @@ urlpatterns = [
     path('mypage/liked-composts', LikedComPostListView.as_view(), name='liked-composts'),
     path('mypage/myreviews', MyMainReviewListView.as_view(), name='myreviews'),
     path('mypage/mycomposts', MyComPostListView.as_view(), name='mycomposts'),
-    
+    path('mypage/ticket/<int:ticket_id>/memo', TicketMemoView.as_view(), name='ticket_memo'),
 ]

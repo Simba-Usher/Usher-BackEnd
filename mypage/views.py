@@ -1,7 +1,7 @@
 import pandas as pd
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import viewsets, mixins, generics
+from rest_framework import viewsets, mixins, generics, status
 from django.shortcuts import get_object_or_404
 from rest_framework.mixins import UpdateModelMixin, ListModelMixin, RetrieveModelMixin
 from rest_framework.permissions import IsAuthenticated
@@ -23,7 +23,7 @@ def value_to_str(value):
     return str(value) 
 
 class TicketView(APIView):
-    def post(self, request):
+    def post(self, request, ticket_id=None, *args, **kwargs):
         serializer = TicketSerializer(data=request.data)
         if serializer.is_valid():
             ticket_number = serializer.validated_data['ticket_number']
@@ -66,6 +66,14 @@ class TicketView(APIView):
         ticket = get_object_or_404(Ticket, id=ticket_id)
         serializer = TicketSerializer(ticket)
         return Response(serializer.data, status=200)
+    
+    def put(self, request, ticket_id):
+        ticket = get_object_or_404(Ticket, id=ticket_id)
+        serializer = TicketSerializer(ticket, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class MemoViewSet(viewsets.ModelViewSet):
     queryset = Memo.objects.all()
@@ -117,3 +125,18 @@ class MyComPostListView(ListAPIView):
 
     def get_queryset(self):
         return ComPost.objects.filter(writer=self.request.user)
+
+class TicketMemoView(APIView):
+    def post(self, request, ticket_id):
+        ticket = get_object_or_404(Ticket, id=ticket_id)
+        memo_data = request.data.get('ticket_memo', '')
+        ticket.ticket_memo = memo_data
+        ticket.save()
+        return Response({"message": "메모가 성공적으로 추가/업데이트 되었습니다."}, status=200)
+
+    def put(self, request, ticket_id):
+        ticket = get_object_or_404(Ticket, id=ticket_id)
+        memo_data = request.data.get('ticket_memo', '')
+        ticket.ticket_memo = memo_data
+        ticket.save()
+        return Response({"message": "메모가 성공적으로 수정되었습니다."}, status=200)
