@@ -63,6 +63,7 @@ class TicketSerializer(serializers.ModelSerializer):
             read_only_fields = ['id', 'performance', 'performance_location', 
             'performance_date', 'reservation_site', 'discount_method', 'price']
 
+#main앱에서 티켓 값 불러올 때 사용하는 시리얼라이저
 class TicketReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticket

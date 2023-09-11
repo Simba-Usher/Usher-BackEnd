@@ -23,6 +23,8 @@ def value_to_str(value):
     return str(value) 
 
 class TicketView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request, ticket_id=None, *args, **kwargs):
         serializer = TicketSerializer(data=request.data)
         if serializer.is_valid():
@@ -49,8 +51,7 @@ class TicketView(APIView):
                     ticket_number=ticket_number,
                     
                     defaults={
-                        #"ticket_memo": ticket_memo,
-                        "user": request.user,
+                        "writer": request.user,
                         **desired_data 
                     }
                 )
@@ -62,10 +63,16 @@ class TicketView(APIView):
                 return Response({"error": "유효하지 않은 티켓입니다."}, status=400)
         return Response(serializer.errors, status=400)
 
-    def get(self, request, ticket_id):
-        ticket = get_object_or_404(Ticket, id=ticket_id)
-        serializer = TicketSerializer(ticket)
-        return Response(serializer.data, status=200)
+    def get(self, request, ticket_id=None):
+            if ticket_id:  #티켓 하나 가져오기
+                ticket = get_object_or_404(Ticket, id=ticket_id)
+                serializer = TicketSerializer(ticket)
+            else:  #티켓 다 가져오기
+                user_tickets = Ticket.objects.filter(writer=request.user)
+                serializer = TicketSerializer(user_tickets, many=True)
+            
+            print (request.user)
+            return Response(serializer.data, status=200)
     
     def put(self, request, ticket_id):
         ticket = get_object_or_404(Ticket, id=ticket_id)
