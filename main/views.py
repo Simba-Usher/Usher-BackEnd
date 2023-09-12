@@ -45,7 +45,6 @@ class OverlappingPriceRangeFilter(Filter):
                 return qs.filter(overlapping)
         return qs
 
-
 class OverlappingDateRangeFilter(Filter):
     def filter(self, qs, value):
         if value:
@@ -148,8 +147,13 @@ class MainReviewViewSet(
     mixins.ListModelMixin
     ):
     #queryset = MainReview.objects.all()
-    serializer_class = MainReviewSerializer
+    #serializer_class = MainReviewSerializer
     
+    def get_serializer_class(self):
+        if self.action == "list":
+            return MainReviewListSerializer
+        return MainReviewSerializer
+
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_class = MainReviewFilter
 
@@ -228,6 +232,7 @@ class MainReviewWriteViewSet(
     def create(self, request, mainpost_id=None):
         mainpost = get_object_or_404(MainPost, id=mainpost_id)
         ticket_id = request.data.get('ticket')
+        
 
         if not ticket_id:
             return Response({"error": "티켓을 선택해주세요."}, status=400)
@@ -238,7 +243,7 @@ class MainReviewWriteViewSet(
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(mainpost=mainpost, ticket=ticket)
+        serializer.save(mainpost=mainpost, ticket=ticket, writer=request.user)
         return Response(serializer.data)
 
 # 리뷰 댓글 detail 관련 뷰셋
@@ -253,7 +258,7 @@ class MainReviewCommentViewSet(
 
     def get_queryset(self):
         mainreview = self.kwargs.get("mainreview_id")
-        queryset = MainReviewComment.objects.filter("mainreview_id=mainreview")
+        queryset = MainReviewComment.objects.filter(mainreview_id=mainreview)
         return queryset
 
     # 읽기만 가능
@@ -261,6 +266,7 @@ class MainReviewCommentViewSet(
         if self.action in ['create', 'destroy']:
             return [IsOwnerOrReadOnly()]
         return []
+            
 
 #리뷰 댓글 작성 관련 뷰셋
 class MainReviewCommentWriteViewSet(

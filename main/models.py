@@ -57,14 +57,13 @@ class MainPost(models.Model):
 
 class MainReview(models.Model):
     id = models.AutoField(primary_key=True)
-    
     mainpost= models.ForeignKey(MainPost, blank=True, null=True, on_delete=models.CASCADE, related_name='mainreviews')
     content = models.TextField(max_length=500, blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     ticket  = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name='mainreviews')
-    writer = models.ForeignKey('user.CustomUser', on_delete=models.CASCADE, blank=False, null=True)
-    #writer = models.ForeignKey(CustomUser, on_delete=models.CASCADE, blank=False, null=True)
+    #writer = models.ForeignKey('user.CustomUser', on_delete=models.CASCADE, blank=False, null=True)
+    writer = models.ForeignKey(CustomUser, on_delete=models.CASCADE, blank=False, null=True, related_name='mainreviews')
     RATING_CHOICES = [
         (1, '1점'),
         (2, '2점'),

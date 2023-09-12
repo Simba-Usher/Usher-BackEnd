@@ -12,7 +12,6 @@ class CustomUserSerializer(serializers.ModelSerializer):
         fields = ['nickname']  
 
 class MainPostSerializer(serializers.ModelSerializer):
-    #writer = CustomUserSerializer(read_only=True)
     #writer = serializers.CharField(source='writer.nickname', read_only=True)
     mainreviews = serializers.SerializerMethodField()
     image = serializers.ImageField(use_url=True, required=False)
@@ -58,7 +57,7 @@ class MainPostSerializer(serializers.ModelSerializer):
             'sentence',
             'place',
         ]
-        read_only_fields = ['id', 'writer', 'mainreviews', 'mainreviews_cnt', 'like_cnt', 'average_rating',]
+        read_only_fields = ['id', 'mainreviews', 'mainreviews_cnt', 'like_cnt', 'average_rating',]
 
 class MainPostListSerializer(serializers.ModelSerializer):
     #writer = CustomUserSerializer(read_only=True)
@@ -103,7 +102,6 @@ class MainReviewSerializer(serializers.ModelSerializer):
     mainrecoms = serializers.SerializerMethodField()
     mainrecoms_cnt = serializers.SerializerMethodField()
     ticket = TicketReviewSerializer(read_only=True)
-    #ticket = serializers.PrimaryKeyRelatedField(queryset=Ticket.objects.all(), many=False)
     
     def get_like_cnt(self, instance):
         return instance.reactions.filter(reaction='like').count()
@@ -160,7 +158,6 @@ class MainReviewListSerializer(serializers.ModelSerializer):
         ]
 
 class MainReviewCommentSerializer(serializers.ModelSerializer):
-    #writer = CustomUserSerializer(source='writer.nickname', read_only=True)
     mainreview = serializers.SerializerMethodField()
     writer = serializers.CharField(source='writer.nickname', read_only=True)
 

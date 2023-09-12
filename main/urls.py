@@ -21,7 +21,6 @@ router.register("mainrecoms", MainReviewCommentViewSet, basename="mainrecoms")
 
 urlpatterns = [
     path("", include(router.urls)),
-    # Add custom URLs for 'latest' and 'popular' actions
     re_path(r'^mainposts/(?P<mainpost_id>\d+)/mainreviews/latest', MainReviewViewSet.as_view({'get': 'latest'}), name='mainreview-latest'),
     re_path(r'^mainposts/(?P<mainpost_id>\d+)/mainreviews/popular', MainReviewViewSet.as_view({'get': 'popular'}), name='mainreview-popular'),
     re_path(r'^mainposts/(?P<mainpost_id>\d+)/mainreviews/(?P<pk>\d+)/likes/$', MainReviewViewSet.as_view({'post': 'likes'}), name='mainreview-likes-under-mainpost'),
