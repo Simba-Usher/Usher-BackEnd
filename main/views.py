@@ -215,14 +215,15 @@ class MainReviewWriteViewSet(
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
     ):
     serializer_class = MainReviewSerializer
     permission_classes = [IsAuthenticated]
 
-#    def get_permissions(self):
-#        if self.action in ['create', 'destroy']:
-#            return [IsAuthenticated()]
-#        return []
+    def get_permissions(self):
+        if self.action in ['create', 'destroy']:
+            return [IsAuthenticated()]
+        return []
 
     def get_queryset(self):
         mainpost = self.kwargs.get("mainpost_id")
@@ -274,6 +275,7 @@ class MainReviewCommentWriteViewSet(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
     ):
     queryset = MainReviewComment.objects.all()
     serializer_class = MainReviewCommentSerializer

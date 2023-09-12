@@ -87,6 +87,9 @@ class MemoViewSet(viewsets.ModelViewSet):
 
     serializer_class = MemoSerializer
 
+    def get_queryset(self):
+        return Memo.objects.filter(writer=self.request.user)
+
 class ProfileUpdateView(UpdateModelMixin, generics.GenericAPIView):
     serializer_class = ProfileUpdateSerializer
     permission_classes = [IsAuthenticated]
