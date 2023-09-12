@@ -71,7 +71,6 @@ class TicketView(APIView):
                 user_tickets = Ticket.objects.filter(writer=request.user)
                 serializer = TicketSerializer(user_tickets, many=True)
             
-            print (request.user)
             return Response(serializer.data, status=200)
     
     def put(self, request, ticket_id):
