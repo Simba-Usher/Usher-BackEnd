@@ -26,11 +26,11 @@ class ComPostFilter(filters.FilterSet):
 
 class ComPostViewSet(viewsets.ModelViewSet):
     queryset = ComPost.objects.annotate(
-        like_cnt=Count(
-            "reactions", filter=Q(reactions__reaction="like"), distinct=True
-        ),
-
+    like_cnt=Count(
+        "reactions", filter=Q(reactions__reaction="like"), distinct=True
     )
+    ).order_by('-created_at') 
+
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_class = ComPostFilter
 
