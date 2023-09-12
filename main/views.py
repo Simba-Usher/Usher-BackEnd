@@ -243,7 +243,7 @@ class MainReviewWriteViewSet(
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(mainpost=mainpost, ticket=ticket, writer=request.user)
+        serializer.save(mainpost=mainpost, ticket=ticket, writer=request.user) #이렇게 writer를 추가해줘야 값이 반환됨!
         return Response(serializer.data)
 
 # 리뷰 댓글 detail 관련 뷰셋

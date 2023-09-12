@@ -83,6 +83,8 @@ class TicketView(APIView):
 
 class MemoViewSet(viewsets.ModelViewSet):
     queryset = Memo.objects.all()
+    permission_classes = [IsAuthenticated]
+
     serializer_class = MemoSerializer
 
 class ProfileUpdateView(UpdateModelMixin, generics.GenericAPIView):
@@ -133,6 +135,8 @@ class MyComPostListView(ListAPIView):
         return ComPost.objects.filter(writer=self.request.user)
 
 class TicketMemoView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request, ticket_id):
         ticket = get_object_or_404(Ticket, id=ticket_id)
         memo_data = request.data.get('ticket_memo', '')
