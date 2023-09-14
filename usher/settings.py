@@ -29,7 +29,16 @@ SECRET_KEY = 'django-insecure-(c%sxj69xi@b07*lqh917pnwc_zb*j%$e=8dd09ffdk#&)1cog
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+    "http://127.0.0.1:5173",
+    "http://localhost:5173",
+    "http://52.79.198.206",
+    "http://52.79.198.206:5173",
+    "http://welcometousher.site"
+]
 
 
 # Application definition
