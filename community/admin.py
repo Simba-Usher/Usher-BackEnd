@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ComPost
+from .models import *
 
 class ComPostAdmin(admin.ModelAdmin):
     list_display = ('id', 'title', 'writer', 'created_at', 'updated_at', 'category', 'views',)

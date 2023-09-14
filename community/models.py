@@ -13,7 +13,7 @@ class ComPost(models.Model):
     content = models.TextField(max_length=1000)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    image = models.ImageField(upload_to='compost_media', blank=True, null=True)
+    image = models.ImageField(upload_to=image_upload_path, blank=True, null=True)
     comcomments_cnt = models.PositiveIntegerField(default=0)
     views = models.PositiveIntegerField(default=0)
     category_choices = [
