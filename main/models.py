@@ -14,7 +14,7 @@ class MainPost(models.Model):
     place = models.CharField(max_length=30, blank=True, null=True)
     sentence = models.CharField(max_length=30)
     content = models.TextField()
-    image = models.ImageField(upload_to=image_upload_path, blank=True, null=True)
+    image = models.ImageField(upload_to='mainpost_media/', blank=True, null=True)
     price = models.PositiveIntegerField(default=0)
     start_date = models.DateField(verbose_name='시작날짜', null=True)
     end_date = models.DateField(verbose_name='종료날짜', null=True)
