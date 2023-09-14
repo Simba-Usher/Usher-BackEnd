@@ -81,6 +81,14 @@ class TicketView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def delete(self, request, ticket_id):
+        ticket = get_object_or_404(Ticket, id=ticket_id)
+        if ticket.writer != request.user:
+            return Response({"error": "권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
+        ticket.delete()
+        return Response({"message": "티켓이 성공적으로 삭제되었습니다."}, status=status.HTTP_200_OK)
+
+
 class MemoViewSet(viewsets.ModelViewSet):
     queryset = Memo.objects.all()
     permission_classes = [IsAuthenticated]
@@ -100,19 +108,14 @@ class ProfileUpdateView(UpdateModelMixin, generics.GenericAPIView):
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
 
-class LikedMainPostListView(
-    mixins.ListModelMixin, 
-    mixins.RetrieveModelMixin,
-    generics.GenericAPIView):
+class LikedMainPostListView(generics.ListAPIView):
     serializer_class = MainPostListSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return self.request.user.liked_mainposts.all()
-
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
-
+        user = self.request.user
+        return MainPost.objects.filter(liked_users=user)
+        
 class LikedComPostListView(ListModelMixin, GenericAPIView):
     serializer_class = ComPostListSerializer
     permission_classes = [IsAuthenticated]

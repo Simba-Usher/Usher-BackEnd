@@ -66,6 +66,11 @@ class MainPostListSerializer(serializers.ModelSerializer):
     like_cnt = serializers.SerializerMethodField()
     image = serializers.ImageField(use_url=True, required=False)
 
+    is_liked = serializers.SerializerMethodField()
+
+    def get_is_liked(self, instance):
+        return self.context['request'].user in instance.liked_users.all()
+
     def get_like_cnt(self, instance):
         return instance.reactions.filter(reaction='like').count()
 
@@ -91,8 +96,9 @@ class MainPostListSerializer(serializers.ModelSerializer):
             'end_date',
             'sentence',
             'place',
+            'is_liked'
         ]
-        read_only_fields = ['id', 'like_cnt', 'writer', 'mainreviews_cnt', 'like_cnt', 'start_date', 'end_date', 'sentence']
+        read_only_fields = ['id', 'like_cnt', 'writer', 'mainreviews_cnt', 'like_cnt', 'start_date', 'end_date', 'sentence', 'is_liked']
 
 class MainReviewSerializer(serializers.ModelSerializer):
     #writer = CustomUserSerializer(source='writer.nickname', read_only=True)

@@ -78,3 +78,4 @@ class MemoSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return Memo.objects.create(**validated_data)
+
