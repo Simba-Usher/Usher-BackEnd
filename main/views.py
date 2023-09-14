@@ -17,6 +17,7 @@ from .models import *
 from .serializers import *
 from .permissions import IsOwnerOrReadOnly
 
+
 def validate_thousand(value):
     if value % 1000 != 0:
         raise serializers.ValidationError("가격은 1000원 단위로 설정해야 합니다.")

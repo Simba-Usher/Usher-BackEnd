@@ -10,12 +10,14 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework import status
 from django_filters import rest_framework as filters
 from rest_framework.filters import SearchFilter
-
+from rest_framework.parsers import MultiPartParser, FormParser
 
 from .models import *
 from .serializers import *
 from .permissions import IsOwnerOrReadOnly
 from .paginations import ComPostPagination
+
+
 
 class ComPostFilter(filters.FilterSet):
     category = filters.ChoiceFilter(choices=ComPost.category_choices)
@@ -30,6 +32,8 @@ class ComPostViewSet(viewsets.ModelViewSet):
         "reactions", filter=Q(reactions__reaction="like"), distinct=True
     )
     ).order_by('-created_at') 
+
+    parser_classes = (MultiPartParser, FormParser)
 
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_class = ComPostFilter
@@ -55,9 +59,8 @@ class ComPostViewSet(viewsets.ModelViewSet):
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-
-        return Response(serializer.data)
+        serializer.save(writer=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     #조회수 관련 로직
     def retrieve(self, request, *args, **kwargs):
