@@ -37,7 +37,8 @@ ALLOWED_HOSTS = [
     "http://localhost:5173",
     "http://52.79.198.206",
     "http://52.79.198.206:5173",
-    "http://welcometousher.site"
+    "http://welcometousher.site",
+    "welcometousher.site",
 ]
 
 
