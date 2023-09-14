@@ -39,7 +39,7 @@ class ConfirmEmailView(APIView):
         if confirmation:
             confirmation.confirm(self.request)
             
-            return HttpResponseRedirect('http://localhost:5173/success')
+            return HttpResponseRedirect('http://welcometousher.site/success')
         else:
             return Response({"status": "failure", "message": "이메일 인증이 완료되었습니다."})
 
