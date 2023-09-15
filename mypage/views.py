@@ -108,13 +108,15 @@ class ProfileUpdateView(UpdateModelMixin, generics.GenericAPIView):
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
 
-class LikedMainPostListView(generics.ListAPIView):
+class LikedMainPostListView(ListModelMixin, GenericAPIView):
     serializer_class = MainPostListSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        user = self.request.user
-        return user.liked_posts.all()
+        return self.request.user.liked_mainposts.all()
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
     
 class LikedComPostListView(ListModelMixin, GenericAPIView):
     serializer_class = ComPostListSerializer
