@@ -65,6 +65,7 @@ class MainPostListSerializer(serializers.ModelSerializer):
     mainreviews_cnt = serializers.SerializerMethodField()
     like_cnt = serializers.SerializerMethodField()
     image = serializers.ImageField(use_url=True, required=False)
+    is_liked = serializers.SerializerMethodField()
 
     def get_like_cnt(self, instance):
         return instance.reactions.filter(reaction='like').count()
@@ -75,6 +76,13 @@ class MainPostListSerializer(serializers.ModelSerializer):
     def get_average_rating(self, obj):
         avg_rating = obj.mainreviews.aggregate(Avg('rating'))['rating__avg']
         return avg_rating if avg_rating is not None else 0.0
+
+    def get_is_liked(self, obj):
+        user = self.context.get("user", None)
+        if user and user.is_authenticated:
+            return obj.liked_users.filter(id=user.id).exists()
+        return False
+
         
     class Meta:
         model = MainPost

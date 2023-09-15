@@ -51,6 +51,11 @@ class MainPost(models.Model):
         default='서울',
     )
 
+    @property
+    def is_liked_by_user(self, user):
+        return user in self.liked_users.all()
+            
+
     def __str__(self):
         return self.title
     
