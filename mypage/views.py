@@ -34,6 +34,7 @@ class TicketView(APIView):
             # pandas로 엑셀 데이터 불러오기
             df = pd.read_excel('static/KOPIS_data1.xlsx')
             
+            
             # 티켓 번호를 기준으로 원하는 데이터 찾기
             row_data = df[df['입장권고유번호'] == ticket_number]
 
@@ -44,8 +45,7 @@ class TicketView(APIView):
                     "performance_date": value_to_str(row_data['공연일시'].values[0]),
                     "reservation_site": value_to_str(row_data['전송사업자명'].values[0]),
                     "discount_method": value_to_str(row_data['할인종류명(전송처)'].values[0]),
-                    "price": value_to_str(row_data['예매/취소금액'].values[0]),
-                }
+                    "price": float(row_data['예매/취소금액'].values[0]) if pd.notna(row_data['예매/취소금액'].values[0]) else 0,                }
 
                 ticket, created = Ticket.objects.update_or_create(
                     ticket_number=ticket_number,
