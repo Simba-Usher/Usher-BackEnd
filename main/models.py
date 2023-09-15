@@ -88,7 +88,7 @@ class MainReview(models.Model):
         super(MainReview, self).delete(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.rating}점 - {self.mainreviews[:10]}"  
+        return f"{self.rating}점 - {self.content[:10]}"
 
     class Meta:
         verbose_name = "MainReview"
