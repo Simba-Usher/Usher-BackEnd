@@ -66,11 +66,6 @@ class MainPostListSerializer(serializers.ModelSerializer):
     like_cnt = serializers.SerializerMethodField()
     image = serializers.ImageField(use_url=True, required=False)
 
-    is_liked = serializers.SerializerMethodField()
-
-    def get_is_liked(self, instance):
-        return self.context['request'].user in instance.liked_users.all()
-
     def get_like_cnt(self, instance):
         return instance.reactions.filter(reaction='like').count()
 
