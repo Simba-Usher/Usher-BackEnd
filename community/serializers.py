@@ -83,7 +83,6 @@ class ComPostListSerializer(serializers.ModelSerializer):
         read_only_fields = ['category', 'id', 'writer', 'created_at', 'updated_at', 'comcomments_cnt', 'like_cnt', 'views']
 
 class ComCommentSerializer(serializers.ModelSerializer):
-    #writer = CustomUserSerializer(source='writer.nickname', read_only=True)
     writer = serializers.CharField(source='writer.nickname', read_only=True)
     compost = serializers.SerializerMethodField()
     replies = serializers.SerializerMethodField()

@@ -172,8 +172,9 @@ class CommunityComCommentViewSet(
         compost = get_object_or_404(ComPost, id=compost_id)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(compost=compost)
+        serializer.save(compost=compost, writer=request.user)
         return Response(serializer.data)
+
 
 #대댓글 작성 관련 뷰셋
 class CommunityComReplyViewSet(
@@ -201,7 +202,7 @@ class CommunityComReplyViewSet(
         comcomment = get_object_or_404(ComComment, id=comcomment_id)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(comcomment=comcomment)
+        serializer.save(comcomment=comcomment, writer=request.user)
         return Response(serializer.data)
 
 # 대댓글 detail 관련 뷰셋
