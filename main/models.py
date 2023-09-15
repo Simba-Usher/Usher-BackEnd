@@ -77,7 +77,7 @@ class MainReview(models.Model):
         (5, '5점'),
     ]
 
-    rating = models.IntegerField(choices=RATING_CHOICES, default=5)
+    rating = models.IntegerField(choices=RATING_CHOICES, default=0)
     mainrecoms_cnt = models.PositiveIntegerField(default=0)
 
     def save(self, *args, **kwargs):
