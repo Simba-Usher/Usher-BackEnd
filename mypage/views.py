@@ -114,8 +114,8 @@ class LikedMainPostListView(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return MainPost.objects.filter(liked_users=user)
-        
+        return user.liked_posts.all()
+    
 class LikedComPostListView(ListModelMixin, GenericAPIView):
     serializer_class = ComPostListSerializer
     permission_classes = [IsAuthenticated]

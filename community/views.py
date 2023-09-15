@@ -18,8 +18,6 @@ from .permissions import IsOwnerOrReadOnly
 from .paginations import ComPostPagination
 
 
-
-
 class ComPostFilter(filters.FilterSet):
     category = filters.ChoiceFilter(choices=ComPost.category_choices)
     

@@ -30,7 +30,6 @@ class ComComment(models.Model):
     content = models.TextField(max_length=500, blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    #like = models.PositiveIntegerField(default=0)
     writer = models.ForeignKey(CustomUser, on_delete=models.CASCADE, blank=False, null=True)
 
     def save(self, *args, **kwargs):
