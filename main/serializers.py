@@ -60,12 +60,9 @@ class MainPostSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'mainreviews', 'mainreviews_cnt', 'like_cnt', 'average_rating',]
 
 class MainPostListSerializer(serializers.ModelSerializer):
-    #writer = CustomUserSerializer(read_only=True)
-    #writer = serializers.CharField(source='writer.username', read_only=True)
     mainreviews_cnt = serializers.SerializerMethodField()
     like_cnt = serializers.SerializerMethodField()
     image = serializers.ImageField(use_url=True, required=False)
-    is_liked = serializers.SerializerMethodField()
 
     def get_like_cnt(self, instance):
         return instance.reactions.filter(reaction='like').count()
@@ -77,11 +74,6 @@ class MainPostListSerializer(serializers.ModelSerializer):
         avg_rating = obj.mainreviews.aggregate(Avg('rating'))['rating__avg']
         return avg_rating if avg_rating is not None else 0.0
 
-    def get_is_liked(self, obj):
-        user = self.context.get("user", None)
-        if user and user.is_authenticated:
-            return obj.liked_users.filter(id=user.id).exists()
-        return False
 
         
     class Meta:
@@ -99,12 +91,10 @@ class MainPostListSerializer(serializers.ModelSerializer):
             'end_date',
             'sentence',
             'place',
-            'is_liked'
         ]
-        read_only_fields = ['id', 'like_cnt', 'writer', 'mainreviews_cnt', 'like_cnt', 'start_date', 'end_date', 'sentence', 'is_liked']
+        read_only_fields = ['id', 'like_cnt', 'writer', 'mainreviews_cnt', 'like_cnt', 'start_date', 'end_date', 'sentence', ]
 
 class MainReviewSerializer(serializers.ModelSerializer):
-    #writer = CustomUserSerializer(source='writer.nickname', read_only=True)
     writer = serializers.CharField(source='writer.nickname', read_only=True)
     like_cnt = serializers.SerializerMethodField()
     mainpost = serializers.SerializerMethodField()
