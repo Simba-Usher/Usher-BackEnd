@@ -12,7 +12,6 @@ class CustomUserSerializer(serializers.ModelSerializer):
         fields = ['nickname']  
 
 class MainPostSerializer(serializers.ModelSerializer):
-    #writer = serializers.CharField(source='writer.nickname', read_only=True)
     mainreviews = serializers.SerializerMethodField()
     image = serializers.ImageField(use_url=True, required=False)
     like_cnt = serializers.SerializerMethodField()
@@ -30,7 +29,7 @@ class MainPostSerializer(serializers.ModelSerializer):
         writer_id = self.context['request'].user.id  
         mainpost = MainPost.objects.create(writer_id=writer_id, **validated_data) 
         for media_data in media_data.getlist('media'):
-            MainPostMedia.objects.create(mainpost=mainpost, media=media_data)
+            media_data.objects.create(mainpost=mainpost, media=media_data)
         return mainpost
 
     #전체 별점 평균값 리턴 로직
@@ -92,7 +91,16 @@ class MainPostListSerializer(serializers.ModelSerializer):
             'sentence',
             'place',
         ]
-        read_only_fields = ['id', 'like_cnt', 'writer', 'mainreviews_cnt', 'like_cnt', 'start_date', 'end_date', 'sentence', ]
+        read_only_fields = [
+            'id', 
+            'like_cnt', 
+            'writer', 
+            'mainreviews_cnt', 
+            'like_cnt', 
+            'start_date', 
+            'end_date', 
+            'sentence', 
+            ]
 
 class MainReviewSerializer(serializers.ModelSerializer):
     writer = serializers.CharField(source='writer.nickname', read_only=True)
